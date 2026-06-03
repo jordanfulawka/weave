@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: weave
+      POSTGRES_DB: weave
+      POSTGRES_USER: weave
+    volumes:
+      - ./server/src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
