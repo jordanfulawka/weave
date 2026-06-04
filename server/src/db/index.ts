@@ -3,6 +3,7 @@ import pg from 'pg';
 const { Pool } = pg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
+// USERS
 async function createUser(
   email: string,
   username: string,
@@ -30,4 +31,53 @@ async function getUserByUsername(username: string) {
 
   const result = await pool.query(text, values);
   return result.rows[0];
+}
+
+// DOCUMENTS
+async function createDocument(ownerId: string, title: string) {
+  const text = 'INSERT INTO documents(owner_id, title) VALUES($1, $2)';
+  const values = [ownerId, title];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
+async function getDocument(docId: string) {
+  const text = 'SELECT * FROM documents WHERE id = $1';
+  const values = [docId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
+async function getUserDocuments(userId: string) {
+  const text =
+    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT * FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1';
+  const values = [userId];
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+async function updateDocumentTitle(docId: string, title: string) {
+  const text = 'UPDATE documents SET title = $1 WHERE doc_id = $2';
+  const values = [title, docId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
+async function updateDocumentContent(docId: string, content: Buffer) {
+  const text = 'UPDATE documents SET content = $1 WHERE doc_id = $2';
+  const values = [content, docId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
+async function deleteDocument(docId: string) {
+  const text = 'DELETE FROM documents WHERE doc_id = $1';
+  const values = [docId];
+
+  const result = await pool.query(text, values);
 }
