@@ -79,5 +79,39 @@ async function deleteDocument(docId: string) {
   const text = 'DELETE FROM documents WHERE doc_id = $1';
   const values = [docId];
 
-  const result = await pool.query(text, values);
+  await pool.query(text, values);
 }
+
+// COLLABORATORS
+async function addCollaborator(docId: string, userId: string) {
+  const text =
+    'INSERT INTO document_members(document_id, user_id) VALUES($1, $2)';
+  const values = [docId, userId];
+
+  await pool.query(text, values);
+}
+
+async function removeCollaborator(docId: string, userId: string) {
+  const text =
+    'DELETE from document_members WHERE document_id = $1 AND user_id = $2';
+  const values = [docId, userId];
+
+  await pool.query(text, values);
+}
+
+async function getDocumentMembers(docId: string) {
+  const text = 'SELECT * FROM document_members WHERE document_id = $1';
+  const values = [docId];
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+async function isDocumentMember(docId: string, userId: string) {
+  // some sort of boolean function here
+}
+
+// DOCUMENT LINKS
+async function getDocumentLinks(fromDocId: string, toDocIds: string[]) {}
+
+async function getBacklinks(docId: string) {}
