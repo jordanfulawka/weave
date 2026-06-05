@@ -115,3 +115,18 @@ async function isDocumentMember(docId: string, userId: string) {
 async function getDocumentLinks(fromDocId: string, toDocIds: string[]) {}
 
 async function getBacklinks(docId: string) {}
+
+export {
+  createUser,
+  getUserByEmail,
+  getUserByUsername,
+  createDocument,
+  getDocument,
+  getUserDocuments,
+  updateDocumentTitle,
+  updateDocumentContent,
+  deleteDocument,
+  addCollaborator,
+  removeCollaborator,
+  getDocumentMembers,
+};
