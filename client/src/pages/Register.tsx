@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail, Lock, UserRound } from 'lucide-react';
 import { register as apiRegister } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -19,6 +20,7 @@ export default function Register() {
       setLoading(true);
       const { token } = await apiRegister(email, username, password);
       login(token);
+      navigate('/');
     } catch (error) {
       setError((error as Error).message);
     } finally {
@@ -87,7 +89,7 @@ export default function Register() {
             </div>
             <button
               type='submit'
-              className='bg-[#D07B50] font-serif p-3 rounded-md text-white'
+              className='bg-primary font-serif p-3 rounded-md text-white'
             >
               Create Account
             </button>

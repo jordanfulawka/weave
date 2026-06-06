@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
 import { login as apiLogin } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,6 +19,7 @@ export default function Login() {
       setLoading(true);
       const { token } = await apiLogin(email, password);
       login(token);
+      navigate('/');
     } catch (error) {
       setError((error as Error).message);
     } finally {
@@ -73,7 +75,7 @@ export default function Login() {
             </div>
             <button
               type='submit'
-              className='bg-[#D07B50] font-serif p-3 rounded-md text-white'
+              className='bg-primary-container font-serif p-3 rounded-md text-white'
             >
               Sign in
             </button>
