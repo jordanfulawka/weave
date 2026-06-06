@@ -1,3 +1,128 @@
+import { useState } from 'react';
+import { Mail, Lock, UserRound } from 'lucide-react';
+import { register as apiRegister } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router';
+
 export default function Register() {
-  return <div>register</div>;
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const { token } = await apiRegister(email, username, password);
+      login(token);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className='bg-background h-screen flex flex-col items-center'>
+      <div className='flex flex-col items-center pt-5 pb-10'>
+        <h1 className='text-on-background text-3xl'>Weave</h1>
+        <p className='italic font-serif'>Your thoughts, connected</p>
+      </div>
+      <div className='w-96 bg-surface-container-lowest shadow-xl rounded-md'>
+        <div className='p-8'>
+          <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
+            <div className='flex flex-col gap-1'>
+              <label className='font-serif'>Display Name</label>
+              <div className='relative'>
+                <UserRound
+                  size={16}
+                  strokeWidth={1.5}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none'
+                />
+                <input
+                  type='text'
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className='border border-outline-variant rounded-md w-full pl-9 pr-4 py-3'
+                />
+              </div>
+            </div>
+            <div className='flex flex-col gap-1'>
+              <label className='font-serif'>Email</label>
+              <div className='relative'>
+                <Mail
+                  size={16}
+                  strokeWidth={1.5}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none'
+                />
+                <input
+                  type='text'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className='border border-outline-variant rounded-md w-full pl-9 pr-4 py-3'
+                />
+              </div>
+            </div>
+            <div className='flex flex-col gap-1'>
+              <div className='flex justify-between'>
+                <label className='font-serif'>Password</label>
+              </div>
+              <div className='relative'>
+                <Lock
+                  size={16}
+                  strokeWidth={1.5}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none'
+                />
+                <input
+                  type='password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className='border border-outline-variant rounded-md w-full pl-9 pr-4 py-3'
+                />
+              </div>
+            </div>
+            <button
+              type='submit'
+              className='bg-[#D07B50] font-serif p-3 rounded-md text-white'
+            >
+              Create Account
+            </button>
+          </form>
+          <div className='flex items-center gap-3 py-5'>
+            <div className='flex-1 h-px bg-outline-variant' />
+            <span className='text-on-surface-variant text-sm font-serif'>
+              or continue with
+            </span>
+            <div className='flex-1 h-px bg-outline-variant' />
+          </div>
+          <div className='font-serif flex justify-around'>
+            <button
+              type='button'
+              className='border border-outline-variant w-36 p-3 rounded-md'
+            >
+              Google
+            </button>
+            <button
+              type='button'
+              className='border border-outline-variant w-36 p-3 rounded-md'
+            >
+              Apple
+            </button>
+          </div>
+        </div>
+      </div>
+      <p className='font-serif pt-8'>
+        Already have an account?{' '}
+        <span className='text-[#D07B50]'>
+          <Link to='/login'>Login</Link>
+        </span>
+      </p>
+      <p>{loading ? 'loading...' : ''}</p>
+      <p>{error ? error : ''}</p>
+    </div>
+  );
 }

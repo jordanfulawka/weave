@@ -1,12 +1,28 @@
 import { useState } from 'react';
-import { Mail, Lock, CircleUser } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
+import { login as apiLogin } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const { login } = useAuth();
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    try {
+      setLoading(true);
+      const { token } = await apiLogin(email, password);
+      login(token);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -18,7 +34,7 @@ export default function Login() {
       <div className='w-96 bg-surface-container-lowest shadow-xl rounded-md'>
         <div className='p-8'>
           <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
-            <div className='flex flex-col'>
+            <div className='flex flex-col gap-1'>
               <label className='font-serif'>Email</label>
               <div className='relative'>
                 <Mail
@@ -57,7 +73,7 @@ export default function Login() {
             </div>
             <button
               type='submit'
-              className='bg-[#D07B50] font-serif p-3 rounded-md text-surface-container'
+              className='bg-[#D07B50] font-serif p-3 rounded-md text-white'
             >
               Sign in
             </button>
@@ -86,8 +102,13 @@ export default function Login() {
         </div>
       </div>
       <p className='font-serif pt-8'>
-        Don't have an account? <span className='text-[#D07B50]'>Register</span>
+        Don't have an account?{' '}
+        <span className='text-[#D07B50]'>
+          <Link to='/register'>Register</Link>
+        </span>
       </p>
+      <p>{loading ? 'loading...' : ''}</p>
+      <p>{error ? error : ''}</p>
     </div>
   );
 }
