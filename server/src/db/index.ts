@@ -10,7 +10,7 @@ async function createUser(
   passwordHash: string,
 ) {
   const text =
-    'INSERT INTO users (email, username, password_hash) VALUES($1, $2, $3)';
+    'INSERT INTO users (email, username, password_hash) VALUES($1, $2, $3) RETURNING *';
   const values = [email, username, passwordHash];
 
   const result = await pool.query(text, values);
@@ -35,7 +35,8 @@ async function getUserByUsername(username: string) {
 
 // DOCUMENTS
 async function createDocument(ownerId: string, title: string) {
-  const text = 'INSERT INTO documents(owner_id, title) VALUES($1, $2)';
+  const text =
+    'INSERT INTO documents(owner_id, title) VALUES($1, $2) RETURNING *';
   const values = [ownerId, title];
 
   const result = await pool.query(text, values);
@@ -60,7 +61,7 @@ async function getUserDocuments(userId: string) {
 }
 
 async function updateDocumentTitle(docId: string, title: string) {
-  const text = 'UPDATE documents SET title = $1 WHERE doc_id = $2';
+  const text = 'UPDATE documents SET title = $1 WHERE doc_id = $2 RETURNING *';
   const values = [title, docId];
 
   const result = await pool.query(text, values);
@@ -68,7 +69,8 @@ async function updateDocumentTitle(docId: string, title: string) {
 }
 
 async function updateDocumentContent(docId: string, content: Buffer) {
-  const text = 'UPDATE documents SET content = $1 WHERE doc_id = $2';
+  const text =
+    'UPDATE documents SET content = $1 WHERE doc_id = $2 RETURNING *';
   const values = [content, docId];
 
   const result = await pool.query(text, values);
@@ -85,7 +87,7 @@ async function deleteDocument(docId: string) {
 // COLLABORATORS
 async function addCollaborator(docId: string, userId: string) {
   const text =
-    'INSERT INTO document_members(document_id, user_id) VALUES($1, $2)';
+    'INSERT INTO document_members(document_id, user_id) VALUES($1, $2) RETURNING *';
   const values = [docId, userId];
 
   await pool.query(text, values);

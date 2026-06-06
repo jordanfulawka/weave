@@ -9,23 +9,25 @@ const router = express.Router();
 router.route('/register').post(async (req: Request, res: Response) => {
   try {
     const { email, username, password } = req.body;
-    const passwordHash = await bcrypt.hash(username, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
     const newUser = await createUser(email, username, passwordHash);
 
-    if (!process.env.JWT_TOKEN) {
+    if (!process.env.JWT_SECRET) {
       return res.status(500).json({ error: 'Server misconfiguration' });
     }
 
     const token = jwt.sign(
       {
         id: newUser.id,
-        username: username,
-        email: email,
+        username: newUser.username,
+        email: newUser.email,
       },
-      process.env.JWT_TOKEN,
+      process.env.JWT_SECRET,
     );
+    console.log('hello!');
     res.status(201).json({ token });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: 'Registration failed' });
   }
 });
@@ -39,7 +41,7 @@ router.route('/login').post(async (req: Request, res: Response) => {
     }
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
-    if (!process.env.JWT_TOKEN) {
+    if (!process.env.JWT_SECRET) {
       return res.status(500).json({ error: 'Server misconfiguration' });
     }
 
@@ -50,15 +52,15 @@ router.route('/login').post(async (req: Request, res: Response) => {
           username: user.usernmae,
           email: user.email,
         },
-        process.env.JWT_TOKEN,
+        process.env.JWT_SECRET,
       );
       res.status(200).json({ token });
     } else {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (err) {
     res.status(500).json({ error: 'login failed' });
   }
 });
 
-export default { authRouter: router };
+export default router;
