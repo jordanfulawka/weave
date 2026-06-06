@@ -1,3 +1,69 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Colors */
+  --color-background: #fff8f6;
+  --color-on-background: #221a16;
+  --color-surface: #fff8f6;
+  --color-surface-dim: #e6d7d1;
+  --color-surface-bright: #fff8f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fff1eb;
+  --color-surface-container: #fbebe5;
+  --color-surface-container-high: #f5e5df;
+  --color-surface-container-highest: #efdfd9;
+  --color-surface-variant: #efdfd9;
+  --color-surface-tint: #934a24;
+  --color-on-surface: #221a16;
+  --color-on-surface-variant: #54433c;
+  --color-inverse-surface: #372e2b;
+  --color-inverse-on-surface: #feede7;
+  --color-outline: #87736a;
+  --color-outline-variant: #dac2b8;
+  --color-primary: #904822;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ae6037;
+  --color-on-primary-container: #fffbff;
+  --color-inverse-primary: #ffb693;
+  --color-secondary: #615e58;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e4dfd7;
+  --color-on-secondary-container: #65625c;
+  --color-tertiary: #006766;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #008280;
+  --color-on-tertiary-container: #f3fffe;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --font-serif: 'Source Serif 4', serif;
+  --font-sans: 'Be Vietnam Pro', sans-serif;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-xxl: 64px;
+  --spacing-gutter: 24px;
+  --spacing-container: 1120px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+}
+
 /* :root {
   --text: #6b6375;
   --text-h: #08060d;
