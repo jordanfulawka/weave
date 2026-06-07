@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* Colors */
@@ -62,6 +63,49 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-background);
   color: var(--color-on-background);
+}
+
+.editor-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+
+  --tw-prose-body: var(--color-on-surface);
+  --tw-prose-headings: var(--color-on-surface);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-on-surface);
+  --tw-prose-quotes: var(--color-on-surface-variant);
+  --tw-prose-quote-borders: var(--color-outline-variant);
+  --tw-prose-code: var(--color-on-surface);
+  --tw-prose-pre-bg: var(--color-surface-container);
+  --tw-prose-hr: var(--color-outline-variant);
+}
+
+/* Give a remote user a caret */
+.tiptap .collaboration-carets__caret {
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.tiptap .collaboration-carets__label {
+  border-radius: 3px 3px 3px 0;
+  color: white;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1rem 0.3rem;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
 }
 
 /* :root {

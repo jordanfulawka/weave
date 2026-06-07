@@ -6,6 +6,7 @@ import Doc from './pages/Doc';
 import { AuthProvider } from './contexts/AuthContext';
 import AppLayout from './layouts/AppLayout';
 import Graph from './pages/Graph';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -14,10 +15,12 @@ function App() {
         <Routes>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
-          <Route element={<AppLayout />}>
-            <Route path='/' element={<Home />} />
-            <Route path='/doc/:docId' element={<Doc />} />
-            <Route path='graph' element={<Graph />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path='/' element={<Home />} />
+              <Route path='/doc/:docId' element={<Doc />} />
+              <Route path='graph' element={<Graph />} />
+            </Route>
           </Route>
           {/* <Route path='/' element={<Home />} />
           <Route path='/doc/:docId' element={<Doc />} /> */}

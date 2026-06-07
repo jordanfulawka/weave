@@ -3,7 +3,8 @@ import type { Request, Response } from 'express';
 import {
   createDocument,
   deleteDocument,
-  getUserDocuments,
+  getOwnedDocuments,
+  getSharedDocuments,
   updateDocumentTitle,
 } from '../db';
 import { httpAuth } from '../middlewares/httpAuth';
@@ -12,8 +13,9 @@ const router = express.Router();
 
 router.route('/').get(httpAuth, async (req: Request, res: Response) => {
   try {
-    const docs = await getUserDocuments((req as any).user.id);
-    res.status(200).json({ docs });
+    const ownedDocs = await getOwnedDocuments((req as any).user.id);
+    const sharedDocs = await getSharedDocuments((req as any).user.id);
+    res.status(200).json({ ownedDocs, sharedDocs });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
   }

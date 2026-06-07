@@ -9,8 +9,9 @@ export default function Doc() {
   if (!params.docId) return null;
   if (!token) return null;
   return (
-    <div>
+    <div className='flex flex-col h-full p-10'>
       <HocuspocusRoom name={params.docId} token={token}>
+        <div className='h-5'>test text</div>
         <Editor />
       </HocuspocusRoom>
     </div>

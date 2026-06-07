@@ -50,9 +50,18 @@ async function getDocument(docId: string) {
   return result.rows[0];
 }
 
-async function getUserDocuments(userId: string) {
+async function getOwnedDocuments(userId: string) {
   const text =
-    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT documents.* FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1 ORDER BY created_at DESC';
+    'SELECT * FROM documents WHERE owner_id = $1 ORDER BY created_at DESC';
+  const values = [userId];
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+async function getSharedDocuments(userId: string) {
+  const text =
+    'SELECT documents.* FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1 ORDER BY created_at DESC';
   const values = [userId];
 
   const result = await pool.query(text, values);
@@ -122,7 +131,8 @@ export {
   getUserByUsername,
   createDocument,
   getDocument,
-  getUserDocuments,
+  getOwnedDocuments,
+  getSharedDocuments,
   updateDocumentTitle,
   updateDocumentContent,
   deleteDocument,
