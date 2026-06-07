@@ -34,7 +34,7 @@ async function getUserByUsername(username: string) {
 }
 
 // DOCUMENTS
-async function createDocument(ownerId: string, title: string) {
+async function createDocument(ownerId: string, title?: string) {
   const text =
     'INSERT INTO documents(owner_id, title) VALUES($1, $2) RETURNING *';
   const values = [ownerId, title];

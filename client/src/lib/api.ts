@@ -26,4 +26,8 @@ async function register(email: string, username: string, password: string) {
   return response.json();
 }
 
+async function createNote(ownerId: string, title?: string) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/`);
+}
+
 export { login, register };

@@ -55,7 +55,7 @@ export default function Login() {
             <div className='flex flex-col gap-1'>
               <div className='flex justify-between'>
                 <label className='font-serif'>Password</label>
-                <span className='font-serif text-[#D07B50]'>
+                <span className='font-serif text-primary-container'>
                   Forgot password?
                 </span>
               </div>
