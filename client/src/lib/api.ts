@@ -9,6 +9,10 @@ async function login(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     },
   );
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error);
+  }
   return response.json();
 }
 
@@ -23,17 +27,20 @@ async function register(email: string, username: string, password: string) {
       body: JSON.stringify({ email, username, password }),
     },
   );
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error);
+  }
   return response.json();
 }
 
-async function createDocument(token: string, title?: string) {
+async function createDocument(token: string) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/doc`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title }),
   });
   return response.json();
 }
@@ -45,7 +52,6 @@ async function getDocuments(token: string) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response);
   return response.json();
 }
 

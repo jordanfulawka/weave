@@ -49,7 +49,7 @@ router.route('/login').post(async (req: Request, res: Response) => {
       const token = jwt.sign(
         {
           id: user.id,
-          username: user.usernmae,
+          username: user.username,
           email: user.email,
         },
         process.env.JWT_SECRET,

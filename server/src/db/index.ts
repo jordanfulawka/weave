@@ -34,10 +34,9 @@ async function getUserByUsername(username: string) {
 }
 
 // DOCUMENTS
-async function createDocument(ownerId: string, title?: string) {
-  const text =
-    'INSERT INTO documents(owner_id, title) VALUES($1, $2) RETURNING *';
-  const values = [ownerId, title];
+async function createDocument(ownerId: string) {
+  const text = 'INSERT INTO documents(owner_id) VALUES($1) RETURNING *';
+  const values = [ownerId];
 
   const result = await pool.query(text, values);
   return result.rows[0];
@@ -53,7 +52,7 @@ async function getDocument(docId: string) {
 
 async function getUserDocuments(userId: string) {
   const text =
-    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT documents.* FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1';
+    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT documents.* FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1 ORDER BY created_at DESC';
   const values = [userId];
 
   const result = await pool.query(text, values);

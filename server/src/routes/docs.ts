@@ -23,8 +23,7 @@ router.route('/').get(httpAuth, async (req: Request, res: Response) => {
 
 router.route('/').post(httpAuth, async (req: Request, res: Response) => {
   try {
-    const { title } = req.body;
-    const newDoc = await createDocument((req as any).user.id, title);
+    const newDoc = await createDocument((req as any).user.id);
     res.status(200).json({ newDoc });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
