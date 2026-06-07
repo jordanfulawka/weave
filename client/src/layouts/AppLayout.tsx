@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router';
 import Sidebar from '../components/Sidebar';
+import { HocuspocusProviderWebsocketComponent } from '@hocuspocus/provider-react';
 
 export default function AppLayout() {
   return (
@@ -8,7 +9,9 @@ export default function AppLayout() {
         <Sidebar />
       </div>
       <div className='flex-1'>
-        <Outlet />
+        <HocuspocusProviderWebsocketComponent url={import.meta.env.VITE_WS_URL}>
+          <Outlet />
+        </HocuspocusProviderWebsocketComponent>
       </div>
     </div>
   );

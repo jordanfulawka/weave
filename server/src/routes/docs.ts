@@ -12,9 +12,7 @@ const router = express.Router();
 
 router.route('/').get(httpAuth, async (req: Request, res: Response) => {
   try {
-    console.log((req as any).user);
     const docs = await getUserDocuments((req as any).user.id);
-    console.log(docs);
     res.status(200).json({ docs });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });

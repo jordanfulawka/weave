@@ -3,12 +3,14 @@ import { createDocument, getDocuments } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import type { Document } from '../lib/types';
+import { useNavigate } from 'react-router';
 
 export default function Sidebar() {
   const [error, setError] = useState<string | null>(null);
   const [docs, setDocs] = useState([]);
 
   const { token, user } = useAuth();
+  const navigate = useNavigate();
 
   async function handleCreateDocument() {
     try {
@@ -48,7 +50,11 @@ export default function Sidebar() {
       </div>
       <div>
         {docs.map((doc: Document) => {
-          return <div key={doc.id}>{doc.title}</div>;
+          return (
+            <div key={doc.id} onClick={() => navigate(`/doc/${doc.id}`)}>
+              {doc.title}
+            </div>
+          );
         })}
       </div>
       <div className='p-3'>
