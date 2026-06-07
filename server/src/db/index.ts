@@ -53,7 +53,7 @@ async function getDocument(docId: string) {
 
 async function getUserDocuments(userId: string) {
   const text =
-    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT * FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1';
+    'SELECT * FROM documents WHERE owner_id = $1 UNION SELECT documents.* FROM documents JOIN document_members ON documents.id = document_members.document_id WHERE document_members.user_id = $1';
   const values = [userId];
 
   const result = await pool.query(text, values);
@@ -61,7 +61,7 @@ async function getUserDocuments(userId: string) {
 }
 
 async function updateDocumentTitle(docId: string, title: string) {
-  const text = 'UPDATE documents SET title = $1 WHERE doc_id = $2 RETURNING *';
+  const text = 'UPDATE documents SET title = $1 WHERE id = $2 RETURNING *';
   const values = [title, docId];
 
   const result = await pool.query(text, values);
@@ -69,8 +69,7 @@ async function updateDocumentTitle(docId: string, title: string) {
 }
 
 async function updateDocumentContent(docId: string, content: Buffer) {
-  const text =
-    'UPDATE documents SET content = $1 WHERE doc_id = $2 RETURNING *';
+  const text = 'UPDATE documents SET content = $1 WHERE id = $2 RETURNING *';
   const values = [content, docId];
 
   const result = await pool.query(text, values);

@@ -26,8 +26,27 @@ async function register(email: string, username: string, password: string) {
   return response.json();
 }
 
-async function createNote(ownerId: string, title?: string) {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/`);
+async function createDocument(token: string, title?: string) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/doc`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title }),
+  });
+  return response.json();
 }
 
-export { login, register };
+async function getDocuments(token: string) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/doc`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log(response);
+  return response.json();
+}
+
+export { login, register, createDocument, getDocuments };
