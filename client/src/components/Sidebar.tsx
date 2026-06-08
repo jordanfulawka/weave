@@ -1,15 +1,15 @@
-import { Plus } from 'lucide-react';
-import { createDocument, getDocuments } from '../lib/api';
+import { Plus, Search } from 'lucide-react';
+import { createDocument } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { Document } from '../lib/types';
 import { useNavigate, useParams } from 'react-router';
+import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Sidebar() {
   const [error, setError] = useState<string | null>(null);
-  const [ownedDocs, setOwnedDocs] = useState([]);
-  const [sharedDocs, setSharedDocs] = useState([]);
 
+  const { ownedDocs, sharedDocs } = useDocuments();
   const { token } = useAuth();
   const navigate = useNavigate();
   const params = useParams();
@@ -27,22 +27,22 @@ export default function Sidebar() {
     }
   }
 
-  useEffect(() => {
-    async function getDocs() {
-      try {
-        if (!token) {
-          setError('no token!');
-          return;
-        }
-        const response = await getDocuments(token);
-        setOwnedDocs(response.ownedDocs);
-        setSharedDocs(response.sharedDocs);
-      } catch (err) {
-        setError((err as Error).message);
-      }
-    }
-    getDocs();
-  }, [token]);
+  // useEffect(() => {
+  //   async function getDocs() {
+  //     try {
+  //       if (!token) {
+  //         setError('no token!');
+  //         return;
+  //       }
+  //       const response = await getDocuments(token);
+  //       setOwnedDocs(response.ownedDocs);
+  //       setSharedDocs(response.sharedDocs);
+  //     } catch (err) {
+  //       setError((err as Error).message);
+  //     }
+  //   }
+  //   getDocs();
+  // }, [token]);
 
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
@@ -50,10 +50,21 @@ export default function Sidebar() {
         <h1 className='text-primary font-bold text-xl'>Weave</h1>
       </div>
       <div className='flex justify-center'>
-        <input
-          type='text'
-          className='border border-outline-variant rounded-md py-2 bg-[#FFEDE6]'
-        />
+        <div className='relative'>
+          <Search
+            className='absolute left-3 top-1/2 -translate-y-1/2
+  text-on-surface-variant'
+            size={16}
+          />
+          <input
+            type='text'
+            placeholder='Search...'
+            className='w-full pl-9 pr-3 py-2 rounded-md border
+  border-outline-variant bg-surface-container text-on-surface
+  placeholder:text-on-surface-variant focus:outline-none focus:ring-2
+  focus:ring-primary'
+          />
+        </div>
       </div>
       <div className='overflow-y-scroll'>
         <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>

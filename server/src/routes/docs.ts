@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import {
   createDocument,
   deleteDocument,
+  getDocument,
   getOwnedDocuments,
   getSharedDocuments,
   updateDocumentTitle,
@@ -30,6 +31,19 @@ router.route('/').post(httpAuth, async (req: Request, res: Response) => {
   }
 });
 
+router.route('/:id').get(httpAuth, async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (typeof id !== 'string') {
+      return res.status(500).json({ error: 'invalid id' });
+    }
+    const doc = await getDocument(id);
+    res.status(200).json({ doc });
+  } catch (error) {
+    res.status(500).json({ error: 'there was an error' });
+  }
+});
+
 router.route('/:id').patch(httpAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
@@ -39,7 +53,7 @@ router.route('/:id').patch(httpAuth, async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'invalid id' });
     }
     const doc = await updateDocumentTitle(id, title);
-    res.status(200).json({ doc });
+    // res.status(200).json({ doc });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
   }

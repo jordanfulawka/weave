@@ -55,4 +55,43 @@ async function getDocuments(token: string) {
   return response.json();
 }
 
-export { login, register, createDocument, getDocuments };
+async function getDocumentById(token: string, docId: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
+async function updateDocumentTitle(
+  token: string,
+  title: string,
+  docId: string,
+) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title }),
+    },
+  );
+  return response.json();
+}
+
+export {
+  login,
+  register,
+  createDocument,
+  getDocuments,
+  getDocumentById,
+  updateDocumentTitle,
+};
