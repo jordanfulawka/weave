@@ -1,13 +1,40 @@
 import { Server } from '@hocuspocus/server';
 import jwt from 'jsonwebtoken';
 import * as Y from 'yjs';
-import { getDocument, isDocumentMember, updateDocumentContent } from './db';
+import {
+  getDocument,
+  isDocumentMember,
+  setDocumentLinks,
+  updateDocumentContent,
+} from './db';
 
 const { verify } = jwt;
 
 interface AuthContext {
   userId: string;
   permissions: string[];
+}
+
+function collectWikiLinkIds(fragment: Y.XmlFragment, documentName: string) {
+  const ids = new Set<string>();
+
+  function walk(node: Y.XmlFragment | Y.XmlElement | Y.XmlText | Y.XmlHook) {
+    if (node instanceof Y.XmlElement) {
+      if (node.nodeName === 'wikilink') {
+        const documentId = node.getAttribute('documentId');
+        if (documentId && documentId !== documentName) {
+          ids.add(documentId);
+        }
+      }
+    }
+    if (node instanceof Y.XmlFragment || node instanceof Y.XmlElement) {
+      for (const child of node.toArray()) {
+        walk(child);
+      }
+    }
+  }
+  walk(fragment);
+  return Array.from(ids);
 }
 
 const server = new Server({
@@ -40,6 +67,13 @@ const server = new Server({
   async onStoreDocument({ documentName, document }) {
     const update = Y.encodeStateAsUpdate(document);
     await updateDocumentContent(documentName, Buffer.from(update));
+
+    const fragment = document.getXmlFragment('default');
+    console.log('helllllooo');
+    await setDocumentLinks(
+      documentName,
+      collectWikiLinkIds(fragment, documentName),
+    );
   },
 });
 

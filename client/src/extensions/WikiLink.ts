@@ -18,6 +18,10 @@ declare module '@tiptap/core' {
       setWikiLinkDocuments: (documents: Document[]) => ReturnType;
     };
   }
+
+  interface Storage {
+    wikilink: WikiLinkStorage;
+  }
 }
 
 export interface WikiLinkNodeAttrs {

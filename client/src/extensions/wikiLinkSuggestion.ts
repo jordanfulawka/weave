@@ -8,7 +8,7 @@ import WikiLinkSuggestionList, {
 
 export const wikiLinkSuggestion: Omit<SuggestionOptions<Document>, 'editor'> = {
   items: ({ query, editor }) => {
-    const documents = (editor.storage.wikilink?.documents ?? []) as Document[];
+    const documents = editor.storage.wikilink.documents;
 
     if (!query) {
       return documents.slice(0, 10);
