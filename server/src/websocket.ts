@@ -1,7 +1,7 @@
 import { Server } from '@hocuspocus/server';
 import jwt from 'jsonwebtoken';
 import * as Y from 'yjs';
-import { getDocument, updateDocumentContent } from './db';
+import { getDocument, isDocumentMember, updateDocumentContent } from './db';
 
 const { verify } = jwt;
 
@@ -18,10 +18,15 @@ const server = new Server({
   // maxDebounce: 30000,
   // quiet: true,
   // websocketOptions: { maxPayload: 1024 * 1024 },
-  async onAuthenticate({ token }) {
+  async onAuthenticate({ token, documentName }) {
     const secret = process.env.JWT_SECRET;
     if (!secret) return;
     const payload = jwt.verify(token, secret);
+    const userId = (payload as any).id;
+
+    if (!(await isDocumentMember(documentName, userId))) {
+      throw new Error('Not authorized for this document');
+    }
     return { user: payload, permission: ['read', 'write'] };
   },
   async onLoadDocument({ documentName }) {
