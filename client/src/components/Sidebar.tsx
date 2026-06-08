@@ -27,23 +27,6 @@ export default function Sidebar() {
     }
   }
 
-  // useEffect(() => {
-  //   async function getDocs() {
-  //     try {
-  //       if (!token) {
-  //         setError('no token!');
-  //         return;
-  //       }
-  //       const response = await getDocuments(token);
-  //       setOwnedDocs(response.ownedDocs);
-  //       setSharedDocs(response.sharedDocs);
-  //     } catch (err) {
-  //       setError((err as Error).message);
-  //     }
-  //   }
-  //   getDocs();
-  // }, [token]);
-
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
       <div className='p-3'>

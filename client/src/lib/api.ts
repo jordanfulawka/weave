@@ -87,6 +87,19 @@ async function updateDocumentTitle(
   return response.json();
 }
 
+async function getGraphData(token: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/graph`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
 export {
   login,
   register,
@@ -94,4 +107,5 @@ export {
   getDocuments,
   getDocumentById,
   updateDocumentTitle,
+  getGraphData,
 };

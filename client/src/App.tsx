@@ -19,7 +19,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path='/' element={<Home />} />
               <Route path='/doc/:docId' element={<Doc />} />
-              <Route path='graph' element={<Graph />} />
+              <Route path='/graph' element={<Graph />} />
             </Route>
           </Route>
           {/* <Route path='/' element={<Home />} />

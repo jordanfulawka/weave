@@ -4,6 +4,7 @@ import {
   createDocument,
   deleteDocument,
   getDocument,
+  getGraphData,
   getOwnedDocuments,
   getSharedDocuments,
   updateDocumentTitle,
@@ -27,6 +28,16 @@ router.route('/').post(httpAuth, async (req: Request, res: Response) => {
     const newDoc = await createDocument((req as any).user.id);
     res.status(200).json({ newDoc });
   } catch (err) {
+    res.status(500).json({ error: 'there was an error' });
+  }
+});
+
+router.route('/graph').get(httpAuth, async (req: Request, res: Response) => {
+  try {
+    const { nodes, links } = await getGraphData((req as any).user.id);
+    console.log(nodes);
+    res.status(200).json({ nodes, links });
+  } catch (error) {
     res.status(500).json({ error: 'there was an error' });
   }
 });

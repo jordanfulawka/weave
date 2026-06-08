@@ -3,11 +3,10 @@ import Editor from '../components/Editor';
 import { useAuth } from '../contexts/AuthContext';
 import { HocuspocusRoom } from '@hocuspocus/provider-react';
 import { useEffect, useRef, useState } from 'react';
-import { getDocumentById } from '../lib/api';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Doc() {
-  const [title, setTitle] = useState('Loading...');
+  const [title, setTitle] = useState('');
   const { token } = useAuth();
   const params = useParams();
   const { ownedDocs, sharedDocs, renameDocument } = useDocuments();
@@ -19,10 +18,11 @@ export default function Doc() {
 
   useEffect(() => {
     if (currentDoc) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(currentDoc.title);
       savedTitleRef.current = currentDoc.title;
     }
-  }, [params.docId]);
+  }, [currentDoc]);
 
   useEffect(() => {
     if (title === savedTitleRef.current) return;

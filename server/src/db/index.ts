@@ -167,6 +167,24 @@ async function getBacklinks(docId: string) {
   return result.rows;
 }
 
+async function getGraphData(userId: string) {
+  const ownedDocs = await getOwnedDocuments(userId);
+  const sharedDocs = await getSharedDocuments(userId);
+
+  const text =
+    'SELECT * FROM document_links WHERE from_doc_id = ANY($1::uuid[]) AND to_doc_id = ANY($1::uuid[])';
+  const ids = [...ownedDocs, ...sharedDocs].map((doc) => doc.id);
+  const values = [ids];
+  const edges = await pool.query(text, values);
+  const renamedEdges = edges.rows.map((edge) => {
+    return {
+      source: edge.from_doc_id,
+      target: edge.to_doc_id,
+    };
+  });
+  return { nodes: [...ownedDocs, ...sharedDocs], links: renamedEdges };
+}
+
 export {
   createUser,
   getUserByEmail,
@@ -185,4 +203,5 @@ export {
   setDocumentLinks,
   getDocumentLinks,
   getBacklinks,
+  getGraphData,
 };
