@@ -33,7 +33,7 @@ export default function Doc() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [title, renameDocument]);
+  }, [title, params.docId, renameDocument]);
 
   if (!params.docId) return null;
   if (!token) return null;

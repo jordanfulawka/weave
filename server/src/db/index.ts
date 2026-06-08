@@ -117,13 +117,54 @@ async function getDocumentMembers(docId: string) {
 }
 
 async function isDocumentMember(docId: string, userId: string) {
-  // some sort of boolean function here
+  const text =
+    'SELECT EXISTS(SELECT 1 FROM documents WHERE id = $2 AND owner_id = $1 UNION SELECT 1 FROM document_members WHERE document_id = $2 AND user_id = $1)';
+  const values = [userId, docId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0].exists;
 }
 
 // DOCUMENT LINKS
-async function getDocumentLinks(fromDocId: string, toDocIds: string[]) {}
+async function setDocumentLinks(fromDocId: string, toDocIds: string[]) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('DELETE FROM document_links WHERE from_doc_id = $1', [
+      fromDocId,
+    ]);
+    if (toDocIds.length > 0) {
+      await client.query(
+        'INSERT INTO document_links (from_doc_id, to_doc_id) SELECT $1, unnest($2::uuid[])',
+        [fromDocId, toDocIds],
+      );
+    }
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
 
-async function getBacklinks(docId: string) {}
+async function getDocumentLinks(docId: string) {
+  const text =
+    'SELECT documents.* FROM document_links JOIN documents ON document_links.to_doc_id = documents.id WHERE document_links.from_doc_id = $1';
+  const values = [docId];
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+async function getBacklinks(docId: string) {
+  const text =
+    'SELECT documents.* FROM document_links JOIN documents ON document_links.from_doc_id = documents.id WHERE document_links.to_doc_id = $1';
+  const values = [docId];
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
 
 export {
   createUser,
@@ -139,4 +180,8 @@ export {
   addCollaborator,
   removeCollaborator,
   getDocumentMembers,
+  isDocumentMember,
+  setDocumentLinks,
+  getDocumentLinks,
+  getBacklinks,
 };
