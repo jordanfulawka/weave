@@ -1,12 +1,17 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Document } from '../lib/types';
 import { useAuth } from './AuthContext';
-import { getDocuments, updateDocumentTitle } from '../lib/api';
+import {
+  getDocuments,
+  updateDocumentTitle,
+  createDocument as apiCreateDocument,
+} from '../lib/api';
 
 interface DocumentsContextType {
   ownedDocs: Document[];
   sharedDocs: Document[];
   renameDocument: (docId: string, newTitle: string) => void;
+  createDocument: () => void;
   error: string | null;
 }
 
@@ -63,9 +68,19 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function createDocument() {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    const response = await apiCreateDocument(token);
+    setOwnedDocs((docs) => [...docs, response.newDoc]);
+    return response.newDoc;
+  }
+
   return (
     <DocumentsContext.Provider
-      value={{ ownedDocs, sharedDocs, renameDocument, error }}
+      value={{ ownedDocs, sharedDocs, renameDocument, error, createDocument }}
     >
       {children}
     </DocumentsContext.Provider>

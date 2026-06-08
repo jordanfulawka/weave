@@ -9,23 +9,23 @@ import { useDocuments } from '../contexts/DocumentsContext';
 export default function Sidebar() {
   const [error, setError] = useState<string | null>(null);
 
-  const { ownedDocs, sharedDocs } = useDocuments();
+  const { ownedDocs, sharedDocs, createDocument } = useDocuments();
   const { token } = useAuth();
   const navigate = useNavigate();
   const params = useParams();
 
-  async function handleCreateDocument() {
-    try {
-      if (!token) {
-        setError('no token provided');
-        return;
-      }
-      const response = await createDocument(token);
-      console.log(response);
-    } catch (err) {
-      setError((err as Error).message);
-    }
-  }
+  // async function handleCreateDocument() {
+  //   try {
+  //     if (!token) {
+  //       setError('no token provided');
+  //       return;
+  //     }
+  //     const response = await createDocument(token);
+  //     console.log(response);
+  //   } catch (err) {
+  //     setError((err as Error).message);
+  //   }
+  // }
 
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
@@ -49,7 +49,7 @@ export default function Sidebar() {
           />
         </div>
       </div>
-      <div className='overflow-y-scroll'>
+      <div className='overflow-y-scroll flex-1'>
         <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
           Your documents
         </h2>
@@ -81,7 +81,7 @@ export default function Sidebar() {
         <button
           type='button'
           className='bg-primary p-3 rounded-md text-white w-full flex items-center justify-center gap-2'
-          onClick={handleCreateDocument}
+          onClick={createDocument}
         >
           <Plus size={18} strokeWidth={3} />
           New Note
