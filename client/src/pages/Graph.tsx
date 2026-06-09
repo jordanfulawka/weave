@@ -1,40 +1,51 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getGraphData } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import ForceGraph2D from 'react-force-graph-2d';
 import { useNavigate } from 'react-router';
+import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Graph() {
-  const [graphData, setGraphData] = useState<{ nodes: any[]; links: any[] }>({
-    nodes: [],
-    links: [],
-  });
+
   const { token } = useAuth();
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const { ownedDocs, sharedDocs } = useDocuments();
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setDimensions({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      });
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     async function fetchGraph() {
-      console.log("tep')");
       if (!token) return;
       const apiGraphData = await getGraphData(token);
-      console.log(apiGraphData);
       setGraphData(apiGraphData);
     }
     fetchGraph();
-  }, [token]);
+  }, [token, ownedDocs.length, sharedDocs.length]);
 
   function handleNodeClick(node) {
     console.log(node);
-    // navigate(`/doc/${node.id}`);
+    navigate(`/doc/${node.id}`);
   }
 
   return (
-    <div className='flex flex-col h-full p-10'>
+    <div ref={containerRef} className='h-full w-full'>
       <ForceGraph2D
         graphData={graphData}
         onNodeClick={handleNodeClick}
-        width={1000}
-        height={1000}
+        width={dimensions.width}
+        height={dimensions.height}
       />
     </div>
   );

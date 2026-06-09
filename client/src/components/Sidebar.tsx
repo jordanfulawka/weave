@@ -1,31 +1,13 @@
 import { Plus, Search } from 'lucide-react';
-import { createDocument } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
 import type { Document } from '../lib/types';
 import { useNavigate, useParams } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Sidebar() {
-  const [error, setError] = useState<string | null>(null);
 
   const { ownedDocs, sharedDocs, createDocument } = useDocuments();
-  const { token } = useAuth();
   const navigate = useNavigate();
   const params = useParams();
-
-  // async function handleCreateDocument() {
-  //   try {
-  //     if (!token) {
-  //       setError('no token provided');
-  //       return;
-  //     }
-  //     const response = await createDocument(token);
-  //     console.log(response);
-  //   } catch (err) {
-  //     setError((err as Error).message);
-  //   }
-  // }
 
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
@@ -87,7 +69,6 @@ export default function Sidebar() {
           New Note
         </button>
       </div>
-      <div>{error ? error : ''}</div>
     </div>
   );
 }

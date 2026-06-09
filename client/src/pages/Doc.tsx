@@ -39,7 +39,7 @@ export default function Doc() {
   if (!token) return null;
 
   return (
-    <div className='flex flex-col h-full p-10'>
+    <div className='flex flex-col h-full p-10 overflow-y-auto'>
       <input
         type='text'
         value={title}

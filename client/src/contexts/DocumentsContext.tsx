@@ -5,6 +5,7 @@ import {
   getDocuments,
   updateDocumentTitle,
   createDocument as apiCreateDocument,
+  getGraphData,
 } from '../lib/api';
 
 interface DocumentsContextType {
@@ -13,6 +14,8 @@ interface DocumentsContextType {
   renameDocument: (docId: string, newTitle: string) => void;
   createDocument: () => void;
   error: string | null;
+  graphData: { nodes: any[]; links: any[] };
+  refreshGraph: () => void;
 }
 
 const DocumentsContext = createContext<DocumentsContextType | null>(null);
@@ -20,6 +23,10 @@ const DocumentsContext = createContext<DocumentsContextType | null>(null);
 export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const [ownedDocs, setOwnedDocs] = useState<Document[]>([]);
   const [sharedDocs, setSharedDocs] = useState<Document[]>([]);
+  const [graphData, setGraphData] = useState<{ nodes: any[]; links: any[] }>({
+    nodes: [],
+    links: [],
+  });
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
@@ -37,7 +44,13 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
         setError((err as Error).message);
       }
     }
+    async function fetchGraph() {
+      if (!token) return;
+      const apiGraphData = await getGraphData(token);
+      setGraphData(apiGraphData);
+    }
     getDocs();
+    fetchGraph();
   }, [token]);
 
   async function renameDocument(docId: string, newTitle: string) {
@@ -74,13 +87,27 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const response = await apiCreateDocument(token);
-    setOwnedDocs((docs) => [...docs, response.newDoc]);
+    setOwnedDocs((docs) => [response.newDoc, ...docs]);
     return response.newDoc;
+  }
+
+  async function refreshGraph() {
+    if (!token) return;
+    const apiGraphData = await getGraphData(token);
+    setGraphData(apiGraphData);
   }
 
   return (
     <DocumentsContext.Provider
-      value={{ ownedDocs, sharedDocs, renameDocument, error, createDocument }}
+      value={{
+        ownedDocs,
+        sharedDocs,
+        renameDocument,
+        error,
+        createDocument,
+        graphData,
+        refreshGraph,
+      }}
     >
       {children}
     </DocumentsContext.Provider>
