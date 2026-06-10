@@ -86,7 +86,7 @@ export function Linkbar() {
           })
         ) : (
           <p className='px-3 py-1.5 text-sm text-on-surface-variant italic'>
-            Nothing links to this note
+            This note doesn't link to anything
           </p>
         )}
         <h3 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-5 mb-1 border-l-2 border-primary pl-2'>
@@ -108,7 +108,7 @@ export function Linkbar() {
           })
         ) : (
           <p className='px-3 py-1.5 text-sm text-on-surface-variant italic'>
-            Nothing notes to this document
+            Nothing links to this note
           </p>
         )}
       </div>

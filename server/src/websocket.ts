@@ -69,7 +69,6 @@ const server = new Server({
     await updateDocumentContent(documentName, Buffer.from(update));
 
     const fragment = document.getXmlFragment('default');
-    console.log('helllllooo');
     await setDocumentLinks(
       documentName,
       collectWikiLinkIds(fragment, documentName),

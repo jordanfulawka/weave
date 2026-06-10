@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Sidebar() {
-
-  const { ownedDocs, sharedDocs, createDocument } = useDocuments();
+  const { ownedDocs, sharedDocs, createDocument, refreshGraph } =
+    useDocuments();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -39,7 +39,10 @@ export default function Sidebar() {
           return (
             <div
               key={doc.id}
-              onClick={() => navigate(`/doc/${doc.id}`)}
+              onClick={() => {
+                navigate(`/doc/${doc.id}`);
+                refreshGraph();
+              }}
               className={`px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
             >
               {doc.title}

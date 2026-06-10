@@ -81,6 +81,15 @@ body {
   --tw-prose-hr: var(--color-outline-variant);
 }
 
+.editor-content strong {
+  color: inherit;
+}
+
+.tiptap:focus,
+.tiptap:focus-visible {
+  outline: none;
+}
+
 /* Give a remote user a caret */
 .tiptap .collaboration-carets__caret {
   border-left: 1px solid #0d0d0d;
