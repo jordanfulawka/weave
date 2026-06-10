@@ -1,11 +1,16 @@
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import type { Document } from '../lib/types';
 import { useNavigate, useParams } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Sidebar() {
-  const { ownedDocs, sharedDocs, createDocument, refreshGraph } =
-    useDocuments();
+  const {
+    ownedDocs,
+    sharedDocs,
+    createDocument,
+    refreshGraph,
+    deleteDocument,
+  } = useDocuments();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -31,33 +36,70 @@ export default function Sidebar() {
           />
         </div>
       </div>
-      <div className='overflow-y-scroll flex-1'>
+      <div className='overflow-y-auto flex-1'>
         <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
           Your documents
         </h2>
         {ownedDocs.map((doc: Document) => {
           return (
             <div
+              className={`flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
               key={doc.id}
               onClick={() => {
                 navigate(`/doc/${doc.id}`);
                 refreshGraph();
               }}
-              className={`px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
             >
-              {doc.title}
+              <div>{doc.title}</div>
+              <span
+                className='cursor-pointer'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    window.confirm(
+                      `Delete "${doc.title}"? This can't be undone.`,
+                    )
+                  ) {
+                    deleteDocument(doc.id);
+                  }
+                }}
+              >
+                <X size={16} className='mr-1' />
+              </span>
             </div>
           );
         })}
         {sharedDocs.length > 0 && (
           <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
-            Your documents
+            Shared with you
           </h2>
         )}
         {sharedDocs.map((doc: Document) => {
           return (
-            <div key={doc.id} onClick={() => navigate(`/doc/${doc.id}`)}>
-              {doc.title}
+            <div
+              className={`flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
+              key={doc.id}
+              onClick={() => {
+                navigate(`/doc/${doc.id}`);
+                refreshGraph();
+              }}
+            >
+              <div>{doc.title}</div>
+              <span
+                className='cursor-pointer'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    window.confirm(
+                      `Leave "${doc.title}"? You will no longer have access to this document.`,
+                    )
+                  ) {
+                    deleteDocument(doc.id);
+                  }
+                }}
+              >
+                <X size={16} className='mr-1' />
+              </span>
             </div>
           );
         })}

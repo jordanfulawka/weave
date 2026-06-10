@@ -100,6 +100,20 @@ async function getGraphData(token: string) {
   return response.json();
 }
 
+async function deleteDocument(token: string, docId: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
 export {
   login,
   register,
@@ -108,4 +122,5 @@ export {
   getDocumentById,
   updateDocumentTitle,
   getGraphData,
+  deleteDocument,
 };

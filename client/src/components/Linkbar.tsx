@@ -66,6 +66,10 @@ export function Linkbar() {
     graphRef.current.d3Force('link').distance(50);
   }, [graphData]);
 
+  function handleNodeClick(node) {
+    navigate(`/doc/${node.id}`);
+  }
+
   return (
     <div className='bg-surface-container-lowest h-full flex flex-col'>
       <div className='max-h-[50%] overflow-y-auto'>
@@ -150,6 +154,7 @@ export function Linkbar() {
                 ).length;
                 return Math.max(1, degree);
               }}
+              onNodeClick={(node) => handleNodeClick(node)}
             />
             <button
               className='absolute bottom-4 left-1/2 -translate-x-1/2 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'

@@ -85,11 +85,12 @@ async function updateDocumentContent(docId: string, content: Buffer) {
   return result.rows[0];
 }
 
-async function deleteDocument(docId: string) {
-  const text = 'DELETE FROM documents WHERE doc_id = $1';
-  const values = [docId];
+async function deleteDocument(docId: string, userId: string) {
+  const text = 'DELETE FROM documents WHERE id = $1 AND owner_id = $2';
+  const values = [docId, userId];
 
-  await pool.query(text, values);
+  const result = await pool.query(text, values);
+  return result.rowCount;
 }
 
 // COLLABORATORS

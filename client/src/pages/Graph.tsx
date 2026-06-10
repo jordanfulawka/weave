@@ -38,7 +38,6 @@ export default function Graph() {
   }, [graphData]);
 
   function handleNodeClick(node) {
-    console.log(node);
     navigate(`/doc/${node.id}`);
   }
 

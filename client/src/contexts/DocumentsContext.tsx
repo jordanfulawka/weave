@@ -5,6 +5,7 @@ import {
   getDocuments,
   updateDocumentTitle,
   createDocument as apiCreateDocument,
+  deleteDocument as apiDeleteDocument,
   getGraphData,
 } from '../lib/api';
 
@@ -16,6 +17,7 @@ interface DocumentsContextType {
   error: string | null;
   graphData: { nodes: any[]; links: any[] };
   refreshGraph: () => void;
+  deleteDocument: (docId: string) => void;
 }
 
 const DocumentsContext = createContext<DocumentsContextType | null>(null);
@@ -91,6 +93,16 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     return response.newDoc;
   }
 
+  async function deleteDocument(docId: string) {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    const response = await apiDeleteDocument(token, docId);
+    setOwnedDocs((docs) => docs.filter((doc) => doc.id !== docId));
+    setSharedDocs((docs) => docs.filter((doc) => doc.id !== docId));
+  }
+
   async function refreshGraph() {
     if (!token) return;
     const apiGraphData = await getGraphData(token);
@@ -107,6 +119,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
         createDocument,
         graphData,
         refreshGraph,
+        deleteDocument,
       }}
     >
       {children}

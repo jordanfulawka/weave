@@ -7,6 +7,8 @@ import {
   getGraphData,
   getOwnedDocuments,
   getSharedDocuments,
+  isDocumentMember,
+  removeCollaborator,
   updateDocumentTitle,
 } from '../db';
 import { httpAuth } from '../middlewares/httpAuth';
@@ -76,7 +78,17 @@ router.route('/:id').delete(httpAuth, async (req: Request, res: Response) => {
     if (typeof id !== 'string') {
       return res.status(400).json({ error: 'invalid id' });
     }
-    await deleteDocument(id);
+    const doc = await getDocument(id);
+    if (doc.owner_id === (req as any).user.id) {
+      const result = await deleteDocument(id, (req as any).user.id);
+      return res.status(200).json({ result });
+    } else {
+      if (await isDocumentMember(id, (req as any).user.id)) {
+        const result = await removeCollaborator(id, (req as any).user.id);
+        return res.status(200).json({ result });
+      }
+    }
+    return res.status(403).json({ error: 'error' });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
   }
