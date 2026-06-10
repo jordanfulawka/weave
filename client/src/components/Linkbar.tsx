@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDocuments } from '../contexts/DocumentsContext';
 import ForceGraph2D from 'react-force-graph-2d';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { FileText } from 'lucide-react';
 
 export function Linkbar() {
@@ -12,6 +12,7 @@ export function Linkbar() {
   const [links, setLinks] = useState([]);
   const [backlinks, setBacklinks] = useState([]);
   const params = useParams();
+  const navigate = useNavigate();
 
   const nodeColours = ['#6750A4', '#B58392', '#7D5260', '#625B71'];
 
@@ -58,6 +59,12 @@ export function Linkbar() {
     setLinks(linkDocs);
     setBacklinks(backlinkDocs);
   }, [graphData, params.docId]);
+
+  useEffect(() => {
+    if (!graphRef.current) return;
+    graphRef.current.d3Force('charge').strength(-10);
+    graphRef.current.d3Force('link').distance(50);
+  }, [graphData]);
 
   return (
     <div className='bg-surface-container-lowest h-full flex flex-col'>
@@ -118,7 +125,7 @@ export function Linkbar() {
         <div className='flex-1 min-h-0 p-5'>
           <div
             ref={graphContainerRef}
-            className='bg-[#fef5f0] shadow-sm h-full w-full rounded-lg border border-outline-variant'
+            className='bg-[#fef5f0] shadow-sm h-full w-full rounded-lg border border-outline-variant relative'
           >
             <ForceGraph2D
               ref={graphRef}
@@ -144,6 +151,12 @@ export function Linkbar() {
                 return Math.max(1, degree);
               }}
             />
+            <button
+              className='absolute bottom-4 left-1/2 -translate-x-1/2 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'
+              onClick={() => navigate('/graph')}
+            >
+              Extend Graph
+            </button>
           </div>
         </div>
       </div>

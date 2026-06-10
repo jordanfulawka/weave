@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Graph() {
-
   const { token } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const graphRef = useRef<any>();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const { ownedDocs, sharedDocs } = useDocuments();
+  const { graphData } = useDocuments();
+
+  const nodeColours = ['#6750A4', '#B58392', '#7D5260', '#625B71'];
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -26,13 +28,10 @@ export default function Graph() {
   }, []);
 
   useEffect(() => {
-    async function fetchGraph() {
-      if (!token) return;
-      const apiGraphData = await getGraphData(token);
-      setGraphData(apiGraphData);
-    }
-    fetchGraph();
-  }, [token, ownedDocs.length, sharedDocs.length]);
+    if (!graphRef.current) return;
+    graphRef.current.d3Force('charge').strength(-20);
+    graphRef.current.d3Force('link').distance(50);
+  }, [graphData]);
 
   function handleNodeClick(node) {
     console.log(node);
@@ -42,10 +41,36 @@ export default function Graph() {
   return (
     <div ref={containerRef} className='h-full w-full'>
       <ForceGraph2D
+        ref={graphRef}
         graphData={graphData}
+        nodeRelSize={10}
+        linkWidth={5}
         onNodeClick={handleNodeClick}
         width={dimensions.width}
         height={dimensions.height}
+        nodeColor={(node) =>
+          nodeColours[node.id.charCodeAt(6) % nodeColours.length]
+        }
+        linkColor={(link) =>
+          nodeColours[link.source.id?.charCodeAt(0) % nodeColours.length]
+        }
+        nodeVal={(node) => {
+          const degree = graphData.links.filter(
+            (link) =>
+              link.source === node.id ||
+              link.target === node.id ||
+              link.source.id === node.id ||
+              link.target.id === node.id,
+          ).length;
+          return Math.max(1, degree);
+        }}
+        nodeLabel={(node) => node.title}
+        linkDirectionalParticles={3}
+        linkDirectionalParticleWidth={10}
+        linkDirectionalParticleColor={(link) =>
+          nodeColours[link.source.id?.charCodeAt(4) % nodeColours.length]
+        }
+        linkCurvature={0.2}
       />
     </div>
   );
