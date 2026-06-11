@@ -1,4 +1,4 @@
-import { Server } from '@hocuspocus/server';
+import { Hocuspocus } from '@hocuspocus/server';
 import jwt from 'jsonwebtoken';
 import * as Y from 'yjs';
 import {
@@ -37,9 +37,8 @@ function collectWikiLinkIds(fragment: Y.XmlFragment, documentName: string) {
   return Array.from(ids);
 }
 
-const server = new Server({
+const hocuspocus = new Hocuspocus({
   name: 'test-server',
-  port: 1234,
   // timeout: 60000,
   // debounce: 5000,
   // maxDebounce: 30000,
@@ -76,4 +75,4 @@ const server = new Server({
   },
 });
 
-export default server;
+export default hocuspocus;
