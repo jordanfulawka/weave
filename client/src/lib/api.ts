@@ -114,6 +114,41 @@ async function deleteDocument(token: string, docId: string) {
   return response.json();
 }
 
+async function searchUsers(
+  token: string,
+  query: string,
+  excludeDocId?: string,
+) {
+  const params = new URLSearchParams({ q: query });
+  if (excludeDocId) params.set('excludeDocId', excludeDocId);
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/users/search?${params.toString()}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
+async function addCollaborator(token: string, docId: string, userId: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}/members`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ userId }),
+    },
+  );
+  return response.json();
+}
+
 export {
   login,
   register,
@@ -123,4 +158,6 @@ export {
   updateDocumentTitle,
   getGraphData,
   deleteDocument,
+  searchUsers,
+  addCollaborator,
 };

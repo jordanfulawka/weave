@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import {
+  addCollaborator,
   createDocument,
   deleteDocument,
   getDocument,
@@ -93,5 +94,28 @@ router.route('/:id').delete(httpAuth, async (req: Request, res: Response) => {
     res.status(500).json({ error: 'there was an error' });
   }
 });
+
+router
+  .route('/:id/members')
+  .post(httpAuth, async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      if (typeof id !== 'string') {
+        return res.status(400).json({ error: 'invalid id' });
+      }
+      const doc = await getDocument(id);
+      if ((req as any).user.id !== doc.owner_id) {
+        return res.status(409).json({ error: 'invalid id' });
+      }
+      const { userId } = req.body;
+      if (typeof userId !== 'string') {
+        return res.status(400).json({ error: 'invalid id' });
+      }
+      const result = await addCollaborator(id, userId);
+      res.status(200).json({ result });
+    } catch (err) {
+      res.status(400).json({ error: 'there was an error' });
+    }
+  });
 
 export default router;

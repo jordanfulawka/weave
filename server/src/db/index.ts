@@ -186,6 +186,28 @@ async function getGraphData(userId: string) {
   return { nodes: [...ownedDocs, ...sharedDocs], links: renamedEdges };
 }
 
+async function searchUsers(
+  query: string,
+  excludeUserId: string,
+  excludeDocId?: string,
+) {
+  let text =
+    'SELECT id, username, email FROM users WHERE username ILIKE $1 AND id != $2';
+
+  const values = [`%${query}%`, excludeUserId];
+
+  if (excludeDocId) {
+    text +=
+      ' AND id NOT IN (SELECT user_id FROM document_members WHERE document_id = $3 UNION SELECT owner_id FROM documents WHERE id = $3)';
+    values.push(excludeDocId);
+  }
+
+  text += ' LIMIT 10';
+
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
 export {
   createUser,
   getUserByEmail,
@@ -205,4 +227,5 @@ export {
   getDocumentLinks,
   getBacklinks,
   getGraphData,
+  searchUsers,
 };
