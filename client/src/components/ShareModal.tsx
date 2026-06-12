@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { searchUsers as apiSearchUsers } from '../lib/api';
+import { addCollaborator, searchUsers as apiSearchUsers } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router';
 
@@ -15,6 +15,7 @@ function ShareModal({ onClose }: { onClose: () => void }) {
     }[]
   >([]);
   const [toast, setToast] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const { token } = useAuth();
   const params = useParams();
@@ -43,6 +44,32 @@ function ShareModal({ onClose }: { onClose: () => void }) {
     }, 2000);
   }
 
+  async function handleKeyPress(e: any) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (highlightedIndex === userResults.length - 1) {
+        setHighlightedIndex(0);
+      } else {
+        setHighlightedIndex((index) => index + 1);
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (highlightedIndex === 0) {
+        setHighlightedIndex(userResults.length - 1);
+      } else {
+        setHighlightedIndex((index) => index - 1);
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (userResults.length === 0) return;
+      const user = userResults[highlightedIndex];
+      const ok = await handleAddCollaborator(user.id);
+      setUserResults([]);
+      setUserSearch('');
+      if (ok) confirmNotification(user.username);
+    }
+  }
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedUserSearch(userSearch);
@@ -69,6 +96,10 @@ function ShareModal({ onClose }: { onClose: () => void }) {
     searchUsers();
   }, [debouncedUserSearch, token, params.docId]);
 
+  useEffect(() => {
+    setHighlightedIndex(userResults.length > 0 ? 0 : -1);
+  }, [userResults]);
+
   return (
     <div
       className='fixed inset-0 flex justify-center items-center bg-black/40 z-50'
@@ -84,22 +115,35 @@ function ShareModal({ onClose }: { onClose: () => void }) {
   text-on-surface-variant'
             size={16}
           />
-          <input
-            type='text'
-            placeholder='Search for a user...'
-            className='w-full pl-9 pr-3 py-2 rounded-md border
-  border-[#625B71]/10 bg-[#625B71]/40 text-on-surface
-  placeholder:text-on-surface-variant focus:outline-none focus:ring-2
-  focus:ring-primary'
-            value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)}
-          />
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (userResults.length === 0) return;
+              const user = userResults[0];
+              const ok = await handleAddCollaborator(user.id);
+              setUserResults([]);
+              setUserSearch('');
+              if (ok) confirmNotification(user.username);
+            }}
+          >
+            <input
+              type='text'
+              placeholder='Search for a user...'
+              className='w-full pl-9 pr-3 py-2 rounded-md border
+            border-[#625B71]/10 bg-[#625B71]/40 text-on-surface
+            placeholder:text-on-surface-variant focus:outline-none focus:ring-2
+            focus:ring-primary'
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
+          </form>
           {userResults.length > 0 && (
             <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-[#625B71]/10 rounded-md shadow-xl max-h-48 overflow-y-auto z-10'>
-              {userResults.map((user) => (
+              {userResults.map((user, index) => (
                 <button
                   key={user.id}
-                  className='w-full text-left px-3 py-2 hover:bg-[#625B71]/10 transition-colors'
+                  className={`w-full text-left px-3 py-2 hover:bg-[#625B71]/10 transition-colors ${index === highlightedIndex ? 'bg-[#625B71]/10' : 'hover:bg-[#625B71]/10'}`}
                   onClick={async () => {
                     const ok = await handleAddCollaborator(user.id);
                     setUserResults([]);
