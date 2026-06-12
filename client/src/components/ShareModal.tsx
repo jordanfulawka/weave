@@ -115,29 +115,18 @@ function ShareModal({ onClose }: { onClose: () => void }) {
   text-on-surface-variant'
             size={16}
           />
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (userResults.length === 0) return;
-              const user = userResults[0];
-              const ok = await handleAddCollaborator(user.id);
-              setUserResults([]);
-              setUserSearch('');
-              if (ok) confirmNotification(user.username);
-            }}
-          >
-            <input
-              type='text'
-              placeholder='Search for a user...'
-              className='w-full pl-9 pr-3 py-2 rounded-md border
+
+          <input
+            type='text'
+            placeholder='Search for a user...'
+            className='w-full pl-9 pr-3 py-2 rounded-md border
             border-[#625B71]/10 bg-[#625B71]/40 text-on-surface
             placeholder:text-on-surface-variant focus:outline-none focus:ring-2
             focus:ring-primary'
-              value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-          </form>
+            value={userSearch}
+            onChange={(e) => setUserSearch(e.target.value)}
+            onKeyDown={handleKeyPress}
+          />
           {userResults.length > 0 && (
             <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-[#625B71]/10 rounded-md shadow-xl max-h-48 overflow-y-auto z-10'>
               {userResults.map((user, index) => (
