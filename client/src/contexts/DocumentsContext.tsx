@@ -8,6 +8,7 @@ import {
   deleteDocument as apiDeleteDocument,
   getGraphData,
 } from '../lib/api';
+import { useNavigate } from 'react-router';
 
 interface DocumentsContextType {
   ownedDocs: Document[];
@@ -31,6 +32,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   });
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getDocs() {
@@ -89,6 +91,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const response = await apiCreateDocument(token);
+    console.log(response);
     setOwnedDocs((docs) => [response.newDoc, ...docs]);
     return response.newDoc;
   }

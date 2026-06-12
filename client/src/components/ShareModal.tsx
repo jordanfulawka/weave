@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { addCollaborator, searchUsers as apiSearchUsers } from '../lib/api';
+import { searchUsers as apiSearchUsers } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router';
 
