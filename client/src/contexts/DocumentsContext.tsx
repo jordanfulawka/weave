@@ -91,7 +91,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const response = await apiCreateDocument(token);
-    console.log(response);
+    console.log(response.newDoc);
+    navigate(`/doc/${response.newDoc.id}`);
     setOwnedDocs((docs) => [response.newDoc, ...docs]);
     return response.newDoc;
   }
