@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDocuments } from '../contexts/DocumentsContext';
 import ForceGraph2D from 'react-force-graph-2d';
-import { Link, useLocation, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { FileText } from 'lucide-react';
 
 export function Linkbar() {
   const { graphData } = useDocuments();
-  const graphRef = useRef<any>();
+  const graphRef = useRef<any>(null);
   const graphContainerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [links, setLinks] = useState([]);
-  const [backlinks, setBacklinks] = useState([]);
+  const [links, setLinks] = useState<any[]>([]);
+  const [backlinks, setBacklinks] = useState<any[]>([]);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -66,7 +66,7 @@ export function Linkbar() {
     graphRef.current.d3Force('link').distance(50);
   }, [graphData]);
 
-  function handleNodeClick(node) {
+  function handleNodeClick(node: any) {
     navigate(`/doc/${node.id}`);
   }
 

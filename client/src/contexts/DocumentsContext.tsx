@@ -98,7 +98,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       setError('no token');
       return;
     }
-    const response = await apiDeleteDocument(token, docId);
+    await apiDeleteDocument(token, docId);
     setOwnedDocs((docs) => docs.filter((doc) => doc.id !== docId));
     setSharedDocs((docs) => docs.filter((doc) => doc.id !== docId));
   }

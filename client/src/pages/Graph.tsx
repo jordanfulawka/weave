@@ -1,18 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { getGraphData } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
 import ForceGraph2D from 'react-force-graph-2d';
 import { useNavigate } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
 
 export default function Graph() {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [hoverNode, setHoverNode] = useState<any>(null);
   const [highlightNodes, setHighlightNodes] = useState(new Set());
   const [highlightLinks, setHighlightLinks] = useState(new Set());
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<any>();
+  const graphRef = useRef<any>(null);
 
   const navigate = useNavigate();
   const { graphData } = useDocuments();
@@ -37,11 +34,11 @@ export default function Graph() {
     graphRef.current.d3Force('link').distance(40);
   }, [graphData]);
 
-  function handleNodeClick(node) {
+  function handleNodeClick(node: any) {
     navigate(`/doc/${node.id}`);
   }
 
-  function handleHoverNode(node) {
+  function handleHoverNode(node: any) {
     const newHighlightNodes = new Set();
     const newHighlightLinks = new Set();
 
@@ -58,7 +55,6 @@ export default function Graph() {
       });
     }
 
-    setHoverNode(node);
     setHighlightLinks(newHighlightLinks);
     setHighlightNodes(newHighlightNodes);
   }
