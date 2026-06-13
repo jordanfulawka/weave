@@ -16,8 +16,11 @@ export default function Sidebar() {
 
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
-      <div className='p-3'>
+      <div className='p-3 flex justify-between items-center'>
         <h1 className='text-primary font-bold text-xl'>Weave</h1>
+        <h1 className='tracking-widest bg-surface-container text-on-surface-variant text-xs p-1 rounded-md'>
+          BETA
+        </h1>
       </div>
       <div className='flex justify-center'>
         <div className='relative'>
@@ -43,7 +46,7 @@ export default function Sidebar() {
         {ownedDocs.map((doc: Document) => {
           return (
             <div
-              className={`flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
+              className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium shadow-sm' : ''}`}
               key={doc.id}
               onClick={() => {
                 navigate(`/doc/${doc.id}`);
@@ -64,7 +67,10 @@ export default function Sidebar() {
                   }
                 }}
               >
-                <X size={16} className='mr-1' />
+                <X
+                  size={16}
+                  className='mr-1 opacity-0 group-hover:opacity-100'
+                />
               </span>
             </div>
           );
@@ -77,7 +83,7 @@ export default function Sidebar() {
         {sharedDocs.map((doc: Document) => {
           return (
             <div
-              className={`flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
+              className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container border-l-2 border-primary ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
               key={doc.id}
               onClick={() => {
                 navigate(`/doc/${doc.id}`);
@@ -98,7 +104,10 @@ export default function Sidebar() {
                   }
                 }}
               >
-                <X size={16} className='mr-1' />
+                <X
+                  size={16}
+                  className='mr-1 opacity-0 group-hover:opacity-100'
+                />
               </span>
             </div>
           );
