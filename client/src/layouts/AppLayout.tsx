@@ -6,7 +6,6 @@ import Linkbar from '../components/Linkbar';
 
 export default function AppLayout() {
   const { pathname } = useLocation();
-  console.log(pathname);
   return (
     <DocumentsProvider>
       <div className='flex h-screen'>

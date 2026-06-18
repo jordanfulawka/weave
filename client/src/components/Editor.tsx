@@ -11,6 +11,16 @@ import WikiLink from '../extensions/WikiLink';
 import { TextStyle, Color, FontSize } from '@tiptap/extension-text-style';
 import { Toolbar } from './Toolbar';
 
+const nodeColours = ['#6750A4', '#B58392', '#7D5260', '#625B71'];
+
+function userHash(username: string | undefined) {
+  if (typeof username !== 'string') return null;
+  const sum = username
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return sum;
+}
+
 function Editor() {
   const provider = useHocuspocusProvider();
   const { user } = useAuth();
@@ -27,7 +37,10 @@ function Editor() {
         Collaboration.configure({ document: provider.document }),
         CollaborationCaret.configure({
           provider,
-          user: { name: user?.username, color: '#904822' },
+          user: {
+            name: user?.username,
+            color: nodeColours[(userHash(user?.username) ?? 0) % 4],
+          },
         }),
         WikiLink,
       ],
