@@ -89,7 +89,7 @@ Note-taking apps like Notion or Google are great for writing, but they treat eac
 
 - [ ] Granular permission levels (viewer, editor, owner) per document, not just owner-or-shared
 - [ ] Sharable public read-only links (no login required)
-- [ ] "Who's online" presence list beyond just live cursors
+- [x] "Who's online" presence list beyond just live cursors
 
 #### History & Resilience
 
