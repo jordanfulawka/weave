@@ -214,6 +214,39 @@ async function searchUsers(
   return result.rows;
 }
 
+async function getFolders(userId: string) {
+  const text =
+    'SELECT * FROM folders WHERE owner_id = $1 ORDER BY created_at DESC';
+  const values = [userId];
+
+  const response = await pool.query(text, values);
+  return response.rows;
+}
+
+async function createFolder(userId: string, name: string) {
+  const text = 'INSERT INTO folders (owner_id, name) VALUES ($1, $2)';
+  const values = [userId, name];
+
+  const response = await pool.query(text, values);
+  return response.rows[0];
+}
+
+async function updateFolderName(name: string, folderId: string) {
+  const text = 'UPDATE folders SET name = $1 WHERE id = $2 RETURNING *';
+  const values = [name, folderId];
+
+  const response = await pool.query(text, values);
+  return response.rows[0];
+}
+
+async function deleteFolder(folderId: string) {
+  const text = 'DELETE FROM folders WHERE id = $1';
+  const values = [folderId];
+
+  const result = await pool.query(text, values);
+  return result.rowCount;
+}
+
 export {
   createUser,
   getUserByEmail,
@@ -234,4 +267,8 @@ export {
   getBacklinks,
   getGraphData,
   searchUsers,
+  getFolders,
+  createFolder,
+  updateFolderName,
+  deleteFolder,
 };

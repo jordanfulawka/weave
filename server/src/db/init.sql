@@ -10,6 +10,7 @@ CREATE TABLE documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title TEXT NOT NULL DEFAULT 'Untitled',
+  folder_id NOT NULL REFERENCES folders(id) ON DELETE SET NULL, 
   content BYTEA,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -27,6 +28,13 @@ CREATE TABLE document_links (
   to_doc_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
   PRIMARY KEY (from_doc_id, to_doc_id)
 );
+
+CREATE TABLE folders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_id UUID NOT NULL REFERENCES users(id),
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
 
 CREATE INDEX ON document_members(user_id);
 CREATE INDEX ON document_links(to_doc_id);
