@@ -1,21 +1,27 @@
-import { Plus, Search, X } from 'lucide-react';
+import { ChevronRight, Folder, Plus, Search } from 'lucide-react';
 import type { Document } from '../lib/types';
-import { useNavigate, useParams } from 'react-router';
 import { useDocuments } from '../contexts/DocumentsContext';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import DocRow from './DocRow';
 
 export default function Sidebar() {
-  const {
-    ownedDocs,
-    sharedDocs,
-    createDocument,
-    refreshGraph,
-    deleteDocument,
-    folders,
-  } = useDocuments();
-  const navigate = useNavigate();
-  const params = useParams();
+  const { ownedDocs, sharedDocs, createDocument, folders, create } =
+    useDocuments();
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set(),
+  );
+
+  function toggleFolder(folderId: string) {
+    setExpandedFolders((expandedFolders) => {
+      const next = new Set(expandedFolders);
+      if (next.has(folderId)) {
+        next.delete(folderId);
+      } else {
+        next.add(folderId);
+      }
+      return next;
+    });
+  }
 
   const { byFolder, ungrouped } = useMemo(() => {
     const byFolder = new Map<string, Document[]>();
@@ -67,101 +73,29 @@ export default function Sidebar() {
         <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
           Your documents
         </h2>
-        {/* {ownedDocs.map((doc: Document) => {
-          return (
-            <div
-              className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium shadow-sm' : ''}`}
-              key={doc.id}
-              onClick={() => {
-                navigate(`/doc/${doc.id}`);
-                refreshGraph();
-              }}
-            >
-              <div>{doc.title}</div>
-              <span
-                className='cursor-pointer'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    window.confirm(
-                      `Delete "${doc.title}"? This can't be undone.`,
-                    )
-                  ) {
-                    deleteDocument(doc.id);
-                  }
-                }}
-              >
-                <X
-                  size={16}
-                  className='mr-1 opacity-0 group-hover:opacity-100'
-                />
-              </span>
-            </div>
-          );
-        })} */}
         {folders.map((folder) => (
           <div key={folder.id}>
-            <h1>{folder.name}</h1>
-            {(byFolder.get(folder.id) ?? []).map((doc) => (
-              // <div
-              //   className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium shadow-sm' : ''}`}
-              //   key={doc.id}
-              //   onClick={() => {
-              //     navigate(`/doc/${doc.id}`);
-              //     refreshGraph();
-              //   }}
-              // >
-              //   <div>{doc.title}</div>
-              //   <span
-              //     className='cursor-pointer'
-              //     onClick={(e) => {
-              //       e.stopPropagation();
-              //       if (
-              //         window.confirm(
-              //           `Delete "${doc.title}"? This can't be undone.`,
-              //         )
-              //       ) {
-              //         deleteDocument(doc.id);
-              //       }
-              //     }}
-              //   >
-              //     <X
-              //       size={16}
-              //       className='mr-1 opacity-0 group-hover:opacity-100'
-              //     />
-              //   </span>
-              // </div>
-              <DocRow doc={doc} isShared={false} />
-            ))}
+            <div
+              className='flex items-center gap-2 px-3 py-2 cursor-pointer'
+              onClick={() => toggleFolder(folder.id)}
+            >
+              <ChevronRight
+                size={14}
+                className={`transition-transform ${expandedFolders.has(folder.id) ? 'rotate-90' : ''}`}
+              />
+              <Folder size={16} />
+              <span>{folder.name}</span>
+            </div>
+            {expandedFolders.has(folder.id)
+              ? (byFolder.get(folder.id) ?? []).map((doc) => (
+                  <DocRow doc={doc} isShared={false} key={doc.id} />
+                ))
+              : null}
           </div>
         ))}
 
-        <h2>{folders.length > 0 ? 'Ungrouped' : 'Your documents'}</h2>
         {ungrouped.map((doc) => (
-          // <div
-          //   className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium shadow-sm' : ''}`}
-          //   key={doc.id}
-          //   onClick={() => {
-          //     navigate(`/doc/${doc.id}`);
-          //     refreshGraph();
-          //   }}
-          // >
-          //   <div>{doc.title}</div>
-          //   <span
-          //     className='cursor-pointer'
-          //     onClick={(e) => {
-          //       e.stopPropagation();
-          //       if (
-          //         window.confirm(`Delete "${doc.title}"? This can't be undone.`)
-          //       ) {
-          //         deleteDocument(doc.id);
-          //       }
-          //     }}
-          //   >
-          //     <X size={16} className='mr-1 opacity-0 group-hover:opacity-100' />
-          //   </span>
-          // </div>
-          <DocRow doc={doc} isShared={false} />
+          <DocRow doc={doc} isShared={false} key={doc.id} />
         ))}
         {sharedDocs.length > 0 && (
           <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
@@ -169,37 +103,7 @@ export default function Sidebar() {
           </h2>
         )}
         {sharedDocs.map((doc: Document) => {
-          return (
-            // <div
-            //   className={`group flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer truncate text-on-surface hover:bg-surface-container border-l-2 border-primary ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''}`}
-            //   key={doc.id}
-            //   onClick={() => {
-            //     navigate(`/doc/${doc.id}`);
-            //     refreshGraph();
-            //   }}
-            // >
-            //   <div>{doc.title}</div>
-            //   <span
-            //     className='cursor-pointer'
-            //     onClick={(e) => {
-            //       e.stopPropagation();
-            //       if (
-            //         window.confirm(
-            //           `Leave "${doc.title}"? You will no longer have access to this document.`,
-            //         )
-            //       ) {
-            //         deleteDocument(doc.id);
-            //       }
-            //     }}
-            //   >
-            //     <X
-            //       size={16}
-            //       className='mr-1 opacity-0 group-hover:opacity-100'
-            //     />
-            //   </span>
-            // </div>
-            <DocRow doc={doc} isShared={true} />
-          );
+          return <DocRow doc={doc} isShared={true} key={doc.id} />;
         })}
       </div>
       <div className='p-3'>
