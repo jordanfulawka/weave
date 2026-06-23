@@ -5,8 +5,7 @@ import { useMemo, useState } from 'react';
 import DocRow from './DocRow';
 
 export default function Sidebar() {
-  const { ownedDocs, sharedDocs, createDocument, folders, create } =
-    useDocuments();
+  const { ownedDocs, sharedDocs, createDocument, folders } = useDocuments();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(),
   );
