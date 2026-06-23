@@ -149,6 +149,76 @@ async function addCollaborator(token: string, docId: string, userId: string) {
   return response.json();
 }
 
+async function getFolders(token: string) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/folders`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.json();
+}
+
+async function createFolder(token: string, name: string) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/folders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name }),
+  });
+  return response.json();
+}
+
+async function renameFolder(token: string, folderId: string, name: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/folders/${folderId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    },
+  );
+  return response.json();
+}
+
+async function deleteFolder(token: string, folderId: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/folders/${folderId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
+async function updateDocumentFolder(
+  token: string,
+  docId: string,
+  folder: string,
+) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ folder }),
+    },
+  );
+  return response.json();
+}
+
 export {
   login,
   register,
@@ -160,4 +230,9 @@ export {
   deleteDocument,
   searchUsers,
   addCollaborator,
+  getFolders,
+  createFolder,
+  renameFolder,
+  deleteFolder,
+  updateDocumentFolder,
 };

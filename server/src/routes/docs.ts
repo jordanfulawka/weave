@@ -10,6 +10,7 @@ import {
   getSharedDocuments,
   isDocumentMember,
   removeCollaborator,
+  updateDocumentFolder,
   updateDocumentTitle,
 } from '../db';
 import { httpAuth } from '../middlewares/httpAuth';
@@ -62,12 +63,28 @@ router.route('/:id').patch(httpAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const { title } = req.body;
+    const folder = req.body?.folder;
 
     if (typeof id !== 'string') {
       return res.status(400).json({ error: 'invalid id' });
     }
-    const doc = await updateDocumentTitle(id, title);
-    // res.status(200).json({ doc });
+
+    let doc = await getDocument(id);
+    if (doc.owner_id !== (req as any).user.id) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+
+    if (req.body.folder !== undefined) {
+      await updateDocumentFolder(folder, id);
+    }
+
+    if (typeof title === 'string') {
+      await updateDocumentTitle(id, title);
+    }
+
+    doc = await getDocument(id);
+
+    res.status(200).json({ doc });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
   }

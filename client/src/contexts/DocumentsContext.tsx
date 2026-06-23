@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { Document } from '../lib/types';
+import type { Document, Folder } from '../lib/types';
 import { useAuth } from './AuthContext';
 import {
   getDocuments,
@@ -7,6 +7,11 @@ import {
   createDocument as apiCreateDocument,
   deleteDocument as apiDeleteDocument,
   getGraphData,
+  getFolders,
+  createFolder as apiCreateFolder,
+  renameFolder as apiRenameFolder,
+  deleteFolder as apiDeleteFolder,
+  updateDocumentFolder,
 } from '../lib/api';
 import { useNavigate } from 'react-router';
 
@@ -15,10 +20,15 @@ interface DocumentsContextType {
   sharedDocs: Document[];
   renameDocument: (docId: string, newTitle: string) => void;
   createDocument: () => void;
+  deleteDocument: (docId: string) => void;
   error: string | null;
   graphData: { nodes: any[]; links: any[] };
   refreshGraph: () => void;
-  deleteDocument: (docId: string) => void;
+  createFolder: (name: string) => void;
+  renameFolder: (folderId: string, name: string) => void;
+  deleteFolder: (folderId: string) => void;
+  moveDocToFolder: (docId: string, folderId: string) => void;
+  folders: Folder[];
 }
 
 const DocumentsContext = createContext<DocumentsContextType | null>(null);
@@ -31,6 +41,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     links: [],
   });
   const [error, setError] = useState<string | null>(null);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -53,8 +64,14 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       const apiGraphData = await getGraphData(token);
       setGraphData(apiGraphData);
     }
+    async function fetchFolders() {
+      if (!token) return;
+      const folders = await getFolders(token);
+      setFolders(folders.folders);
+    }
     getDocs();
     fetchGraph();
+    fetchFolders();
   }, [token]);
 
   async function renameDocument(docId: string, newTitle: string) {
@@ -107,6 +124,60 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     setSharedDocs((docs) => docs.filter((doc) => doc.id !== docId));
   }
 
+  async function createFolder(name: string) {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    const response = await apiCreateFolder(token, name);
+    setFolders((folders) => [response.folder, ...folders]);
+  }
+
+  async function renameFolder(folderId: string, name: string) {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    await apiRenameFolder(token, folderId, name);
+    setFolders((folders) =>
+      folders.map((folder) =>
+        folder.id === folderId ? { ...folder, name: name } : folder,
+      ),
+    );
+  }
+
+  async function deleteFolder(folderId: string) {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    await apiDeleteFolder(token, folderId);
+    setFolders((folders) => folders.filter((folder) => folder.id !== folderId));
+    setOwnedDocs((docs) =>
+      docs.map((doc) =>
+        doc.folder_id === folderId ? { ...doc, folder_id: null } : doc,
+      ),
+    );
+  }
+
+  async function moveDocToFolder(docId: string, folderId: string) {
+    if (!token) {
+      setError('no token');
+      return;
+    }
+    const oldDocs = ownedDocs;
+    try {
+      setOwnedDocs((docs) =>
+        docs.map((doc) =>
+          doc.id === docId ? { ...doc, folder_id: folderId } : doc,
+        ),
+      );
+      await updateDocumentFolder(token, docId, folderId);
+    } catch {
+      setOwnedDocs(oldDocs);
+    }
+  }
+
   async function refreshGraph() {
     if (!token) return;
     const apiGraphData = await getGraphData(token);
@@ -124,6 +195,11 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
         graphData,
         refreshGraph,
         deleteDocument,
+        folders,
+        createFolder,
+        renameFolder,
+        deleteFolder,
+        moveDocToFolder,
       }}
     >
       {children}

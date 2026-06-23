@@ -91,6 +91,14 @@ async function updateDocumentContent(docId: string, content: Buffer) {
   return result.rows[0];
 }
 
+async function updateDocumentFolder(folderId: string | null, docId: string) {
+  const text = 'UPDATE documents SET folder_id = $1 WHERE id = $2 RETURNING *';
+  const values = [folderId, docId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
 async function deleteDocument(docId: string, userId: string) {
   const text = 'DELETE FROM documents WHERE id = $1 AND owner_id = $2';
   const values = [docId, userId];
@@ -224,7 +232,8 @@ async function getFolders(userId: string) {
 }
 
 async function createFolder(userId: string, name: string) {
-  const text = 'INSERT INTO folders (owner_id, name) VALUES ($1, $2)';
+  const text =
+    'INSERT INTO folders (owner_id, name) VALUES ($1, $2) RETURNING *';
   const values = [userId, name];
 
   const response = await pool.query(text, values);
@@ -257,6 +266,7 @@ export {
   getSharedDocuments,
   updateDocumentTitle,
   updateDocumentContent,
+  updateDocumentFolder,
   deleteDocument,
   addCollaborator,
   removeCollaborator,
