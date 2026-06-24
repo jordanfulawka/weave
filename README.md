@@ -81,7 +81,7 @@ Note-taking apps like Notion or Google are great for writing, but they treat eac
 
 #### Organization
 
-- [ ] Folders/nested workspaces for grouping documents
+- [x] Folders/nested workspaces for grouping documents
 - [ ] Tags, in addition to folders, for cross-cutting organization
 - [ ] Full text-search across all documents
 
@@ -94,7 +94,7 @@ Note-taking apps like Notion or Google are great for writing, but they treat eac
 #### History & Resilience
 
 - [ ] Version history / time-travel, leveraging Yjs's CRDT history rather than building a separate audit log
-- [ ] Offlien editing support via local Yjs persistence (IndexedDB) that syncs once reconnected
+- [ ] Offline editing support via local Yjs persistence (IndexedDB) that syncs once reconnected
 
 #### Polish
 

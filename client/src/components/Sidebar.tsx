@@ -1,14 +1,25 @@
-import { ChevronRight, Folder, Plus, Search } from 'lucide-react';
+import { ChevronRight, Folder, Plus, Search, X } from 'lucide-react';
 import type { Document } from '../lib/types';
 import { useDocuments } from '../contexts/DocumentsContext';
 import { useMemo, useState } from 'react';
 import DocRow from './DocRow';
 
 export default function Sidebar() {
-  const { ownedDocs, sharedDocs, createDocument, folders } = useDocuments();
+  const {
+    ownedDocs,
+    sharedDocs,
+    createDocument,
+    folders,
+    createFolder,
+    // renameFolder,
+    deleteFolder,
+    // moveDocToFolder,
+  } = useDocuments();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(),
   );
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
 
   function toggleFolder(folderId: string) {
     setExpandedFolders((expandedFolders) => {
@@ -20,6 +31,19 @@ export default function Sidebar() {
       }
       return next;
     });
+  }
+
+  function handleCreateFolder() {
+    if (newFolderName.trim()) {
+      createFolder(newFolderName.trim());
+    }
+    setIsCreatingFolder(false);
+    setNewFolderName('');
+  }
+
+  function cancelCreateFolder() {
+    setIsCreatingFolder(false);
+    setNewFolderName('');
   }
 
   const { byFolder, ungrouped } = useMemo(() => {
@@ -72,10 +96,32 @@ export default function Sidebar() {
         <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
           Your documents
         </h2>
+        {isCreatingFolder ? (
+          <input
+            type='text'
+            autoFocus
+            value={newFolderName}
+            onChange={(e) => setNewFolderName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreateFolder();
+              if (e.key === 'Escape') cancelCreateFolder();
+            }}
+            onBlur={cancelCreateFolder}
+            className='w-[90%] px-3 py-1 my-1.25 mx-1 rounded-md border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary text-sm'
+          />
+        ) : (
+          <button
+            onClick={() => setIsCreatingFolder(true)}
+            className='flex items-center gap-2 px-3 py-2 w-full text-left text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-md'
+          >
+            <Plus size={14} />
+            New folder
+          </button>
+        )}
         {folders.map((folder) => (
-          <div key={folder.id}>
+          <div key={folder.id} className='mb-1'>
             <div
-              className='flex items-center gap-2 px-3 py-2 cursor-pointer'
+              className='group flex items-center gap-2 px-3 py-2 cursor-pointer'
               onClick={() => toggleFolder(folder.id)}
             >
               <ChevronRight
@@ -84,17 +130,40 @@ export default function Sidebar() {
               />
               <Folder size={16} />
               <span>{folder.name}</span>
+              <span
+                className='cursor-pointer'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    window.confirm(
+                      `Delete "${folder.name}"? Document inside will be unfiled.`,
+                    )
+                  ) {
+                    deleteFolder(folder.id);
+                  }
+                }}
+              >
+                <X
+                  size={16}
+                  className='mr-1 opacity-0 group-hover:opacity-100'
+                />
+              </span>
             </div>
             {expandedFolders.has(folder.id)
               ? (byFolder.get(folder.id) ?? []).map((doc) => (
-                  <DocRow doc={doc} isShared={false} key={doc.id} />
+                  <DocRow
+                    doc={doc}
+                    isShared={false}
+                    key={doc.id}
+                    inFolder={true}
+                  />
                 ))
               : null}
           </div>
         ))}
 
         {ungrouped.map((doc) => (
-          <DocRow doc={doc} isShared={false} key={doc.id} />
+          <DocRow doc={doc} isShared={false} key={doc.id} inFolder={false} />
         ))}
         {sharedDocs.length > 0 && (
           <h2 className='text-xs uppercase tracking-widest text-on-surface px-3 mt-4 mb-1'>
@@ -102,7 +171,9 @@ export default function Sidebar() {
           </h2>
         )}
         {sharedDocs.map((doc: Document) => {
-          return <DocRow doc={doc} isShared={true} key={doc.id} />;
+          return (
+            <DocRow doc={doc} isShared={true} key={doc.id} inFolder={false} />
+          );
         })}
       </div>
       <div className='p-3'>

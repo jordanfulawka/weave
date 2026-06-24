@@ -21,10 +21,6 @@ function DocWorkspace() {
   );
 
   useEffect(() => {
-    console.log(users);
-  }, [users]);
-
-  useEffect(() => {
     if (currentDoc) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(currentDoc.title);
@@ -37,7 +33,6 @@ function DocWorkspace() {
     const timer = setTimeout(() => {
       if (!params.docId) return null;
       renameDocument(params.docId, title);
-      console.log('title changed');
     }, 500);
 
     return () => clearTimeout(timer);
