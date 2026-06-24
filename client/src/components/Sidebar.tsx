@@ -3,6 +3,7 @@ import type { Document } from '../lib/types';
 import { useDocuments } from '../contexts/DocumentsContext';
 import { useMemo, useState } from 'react';
 import DocRow from './DocRow';
+import { useNavigate } from 'react-router';
 
 export default function Sidebar() {
   const {
@@ -13,13 +14,13 @@ export default function Sidebar() {
     createFolder,
     // renameFolder,
     deleteFolder,
-    // moveDocToFolder,
   } = useDocuments();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(),
   );
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const navigate = useNavigate();
 
   function toggleFolder(folderId: string) {
     setExpandedFolders((expandedFolders) => {
@@ -70,7 +71,12 @@ export default function Sidebar() {
   return (
     <div className='bg-surface-container-lowest h-full shadow-xl flex flex-col'>
       <div className='p-3 flex justify-between items-center'>
-        <h1 className='text-primary font-bold text-xl'>Weave</h1>
+        <h1
+          className='text-primary font-bold text-xl cursor-pointer'
+          onClick={() => navigate('/')}
+        >
+          Weave
+        </h1>
         <h1 className='tracking-widest bg-surface-container text-on-surface-variant text-xs p-1 rounded-md'>
           BETA
         </h1>
@@ -121,33 +127,37 @@ export default function Sidebar() {
         {folders.map((folder) => (
           <div key={folder.id} className='mb-1'>
             <div
-              className='group flex items-center gap-2 px-3 py-2 cursor-pointer'
+              className='group flex items-center justify-between gap-2 px-3 py-2 cursor-pointer'
               onClick={() => toggleFolder(folder.id)}
             >
-              <ChevronRight
-                size={14}
-                className={`transition-transform ${expandedFolders.has(folder.id) ? 'rotate-90' : ''}`}
-              />
-              <Folder size={16} />
-              <span>{folder.name}</span>
-              <span
-                className='cursor-pointer'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    window.confirm(
-                      `Delete "${folder.name}"? Document inside will be unfiled.`,
-                    )
-                  ) {
-                    deleteFolder(folder.id);
-                  }
-                }}
-              >
-                <X
-                  size={16}
-                  className='mr-1 opacity-0 group-hover:opacity-100'
+              <div className='flex items-center gap-2'>
+                <ChevronRight
+                  size={14}
+                  className={`transition-transform ${expandedFolders.has(folder.id) ? 'rotate-90' : ''}`}
                 />
-              </span>
+                <Folder size={16} />
+                <span>{folder.name}</span>
+              </div>
+              <div>
+                <span
+                  className='cursor-pointer'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (
+                      window.confirm(
+                        `Delete "${folder.name}"? Document inside will be unfiled.`,
+                      )
+                    ) {
+                      deleteFolder(folder.id);
+                    }
+                  }}
+                >
+                  <X
+                    size={16}
+                    className='mr-1 opacity-0 group-hover:opacity-100'
+                  />
+                </span>
+              </div>
             </div>
             {expandedFolders.has(folder.id)
               ? (byFolder.get(folder.id) ?? []).map((doc) => (
