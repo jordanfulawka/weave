@@ -27,7 +27,7 @@ interface DocumentsContextType {
   createFolder: (name: string) => void;
   renameFolder: (folderId: string, name: string) => void;
   deleteFolder: (folderId: string) => void;
-  moveDocToFolder: (docId: string, folderId: string) => void;
+  moveDocToFolder: (docId: string, folderId: string | null) => void;
   folders: Folder[];
 }
 
