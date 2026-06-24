@@ -231,6 +231,14 @@ async function getFolders(userId: string) {
   return response.rows;
 }
 
+async function getFolder(folderId: string) {
+  const text = 'SELECT * FROM folders WHERE id = $1';
+  const values = [folderId];
+
+  const response = await pool.query(text, values);
+  return response.rows[0];
+}
+
 async function createFolder(userId: string, name: string) {
   const text =
     'INSERT INTO folders (owner_id, name) VALUES ($1, $2) RETURNING *';
@@ -240,17 +248,22 @@ async function createFolder(userId: string, name: string) {
   return response.rows[0];
 }
 
-async function updateFolderName(name: string, folderId: string) {
-  const text = 'UPDATE folders SET name = $1 WHERE id = $2 RETURNING *';
-  const values = [name, folderId];
+async function updateFolderName(
+  name: string,
+  folderId: string,
+  userId: string,
+) {
+  const text =
+    'UPDATE folders SET name = $1 WHERE id = $2 AND owner_id = $3 RETURNING *';
+  const values = [name, folderId, userId];
 
   const response = await pool.query(text, values);
   return response.rows[0];
 }
 
-async function deleteFolder(folderId: string) {
-  const text = 'DELETE FROM folders WHERE id = $1';
-  const values = [folderId];
+async function deleteFolder(folderId: string, userId: string) {
+  const text = 'DELETE FROM folders WHERE id = $1 AND owner_id = $2';
+  const values = [folderId, userId];
 
   const result = await pool.query(text, values);
   return result.rowCount;
@@ -278,6 +291,7 @@ export {
   getGraphData,
   searchUsers,
   getFolders,
+  getFolder,
   createFolder,
   updateFolderName,
   deleteFolder,

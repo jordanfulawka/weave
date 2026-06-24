@@ -4,6 +4,8 @@ import { httpAuth } from '../middlewares/httpAuth';
 import {
   createFolder,
   deleteFolder,
+  getDocument,
+  getFolder,
   getFolders,
   updateFolderName,
 } from '../db';
@@ -33,10 +35,15 @@ router.patch('/:id', httpAuth, async (req: Request, res: Response) => {
   try {
     const name = req.body.name;
     const id = req.params.id;
+
     if (typeof id !== 'string') {
       return res.status(500).json({ error: 'invalid id' });
     }
-    const folder = await updateFolderName(name, id);
+    let folder = await getFolder(id);
+    if (folder.owner_id !== (req as any).user.id) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+    folder = await updateFolderName(name, id, (req as any).user.id);
     res.status(200).json({ folder });
   } catch (err) {
     res
@@ -51,7 +58,11 @@ router.delete('/:id', httpAuth, async (req: Request, res: Response) => {
     if (typeof id !== 'string') {
       return res.status(500).json({ error: 'invalid id' });
     }
-    const result = await deleteFolder(id);
+    const folder = await getFolder(id);
+    if (folder.owner_id !== (req as any).user.id) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+    const result = await deleteFolder(id, (req as any).user.id);
     res.status(200).json({ result });
   } catch (err) {
     res.status(500).json({ error: 'there was an error deleting this folder' });
