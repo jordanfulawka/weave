@@ -203,7 +203,7 @@ async function deleteFolder(token: string, folderId: string) {
 async function updateDocumentFolder(
   token: string,
   docId: string,
-  folder: string,
+  folder: string | null,
 ) {
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/api/doc/${docId}`,

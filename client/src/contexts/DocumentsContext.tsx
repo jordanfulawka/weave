@@ -160,7 +160,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  async function moveDocToFolder(docId: string, folderId: string) {
+  async function moveDocToFolder(docId: string, folderId: string | null) {
     if (!token) {
       setError('no token');
       return;
