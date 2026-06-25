@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Document, Folder } from '../lib/types';
 import { useAuth } from './AuthContext';
