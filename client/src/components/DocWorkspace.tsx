@@ -53,10 +53,13 @@ function DocWorkspace() {
         focus:ring-primary mb-1'
         />
         {isShareModalOpen && (
-          <ShareModal onClose={() => setIsShareModalOpen(false)} />
+          <ShareModal
+            onClose={() => setIsShareModalOpen(false)}
+            docName={currentDoc.title}
+          />
         )}
         <button
-          className='flex items-center gap-1 self-start bg-primary text-on-primary p-2 rounded-xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'
+          className='flex items-center gap-1 text-sm self-start bg-primary text-on-primary p-3 rounded-xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'
           onClick={() => setIsShareModalOpen(true)}
         >
           <span>Share</span> <Share size={16} />
