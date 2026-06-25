@@ -52,7 +52,7 @@ function DocWorkspace() {
         px-2 py-1 focus:bg-surface-container focus:ring-2
         focus:ring-primary mb-1'
         />
-        {isShareModalOpen && (
+        {isShareModalOpen && currentDoc && (
           <ShareModal
             onClose={() => setIsShareModalOpen(false)}
             docName={currentDoc.title}

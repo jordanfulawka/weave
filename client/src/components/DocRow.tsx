@@ -50,19 +50,21 @@ function DocRow({
     >
       <div className='truncate'>{doc.title}</div>
       <div className='flex'>
-        <span
-          className='cursor-pointer'
-          title={'Edit Folder'}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsPickerOpen(true);
-          }}
-        >
-          <FolderInput
-            size={16}
-            className='mr-1 opacity-0 group-hover:opacity-100'
-          />
-        </span>
+        {!isShared && (
+          <span
+            className='cursor-pointer'
+            title={'Edit Folder'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsPickerOpen(true);
+            }}
+          >
+            <FolderInput
+              size={16}
+              className='mr-1 opacity-0 group-hover:opacity-100'
+            />
+          </span>
+        )}
         <span
           className='cursor-pointer'
           title={'Delete Note'}
