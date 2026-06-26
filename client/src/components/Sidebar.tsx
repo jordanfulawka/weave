@@ -1,9 +1,10 @@
-import { ChevronRight, Folder, Plus, Search, X } from 'lucide-react';
+import { ChevronRight, Folder, LogOut, Plus, Search, X } from 'lucide-react';
 import type { Document } from '../lib/types';
 import { useDocuments } from '../contexts/DocumentsContext';
 import { useEffect, useMemo, useState } from 'react';
 import DocRow from './DocRow';
 import { useNavigate } from 'react-router';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +19,7 @@ export default function Sidebar() {
     // renameFolder,
     deleteFolder,
   } = useDocuments();
+  const { user, logout } = useAuth();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(),
   );
@@ -238,6 +240,18 @@ export default function Sidebar() {
         >
           <Plus size={18} strokeWidth={3} />
           New Note
+        </button>
+      </div>
+      <div className='flex justify-between items-center px-3 py-2 border-t border-outline-variant text-sm'>
+        <span className='text-on-surface-variant truncate'>
+          User: {user?.username}
+        </span>
+        <button
+          onClick={logout}
+          title='Sign out'
+          className='text-on-surface-variant hover:text-error transition-colors'
+        >
+          <LogOut size={16} />
         </button>
       </div>
     </div>
