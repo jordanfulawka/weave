@@ -1,8 +1,10 @@
 import { Search, Share2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { searchUsers as apiSearchUsers } from '../lib/api';
+import { addCollaborator, searchUsers as apiSearchUsers } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router';
+import { getCollaborators } from '../lib/api';
+import type { User } from '../lib/types';
 
 function ShareModal({
   onClose,
@@ -22,24 +24,32 @@ function ShareModal({
   >([]);
   const [toast, setToast] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [docMembers, setDocMembers] = useState<User[]>([]);
 
   const { token } = useAuth();
   const params = useParams();
 
+  useEffect(() => {
+    async function getDocumentMembers() {
+      if (!token) return;
+      if (!params.docId) return;
+      const members = await getCollaborators(token, params.docId);
+      console.log(members.members);
+      setDocMembers(members.members);
+    }
+    getDocumentMembers();
+  }, [token, params.docId]);
+
+  useEffect(() => {
+    console.log(docMembers);
+  }, [docMembers]);
+
   async function handleAddCollaborator(userId: string) {
     if (!token) return;
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/doc/${params.docId}/members`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId }),
-      },
-    );
-    return response.ok;
+    if (!params.docId) return;
+    const { addedUser } = await addCollaborator(token, params.docId, userId);
+    setDocMembers((docMembers) => [addedUser, ...docMembers]);
+    return addedUser;
   }
 
   function confirmNotification(username: string) {
@@ -167,11 +177,27 @@ function ShareModal({
             )}
           </div>
         </div>
-        <div className='bg-[#fff8f6] mt-3 border-t border-outline-variant'>
-          <p className='text-outline text-xs tracking-widest uppercase font-semibold'>
-            Who can see this
+        <div className='bg-[#fff8f6] mt-3 border-t border-outline-variant p-3'>
+          <p className='text-outline text-xs tracking-widest uppercase font-semibold pb-3'>
+            {docMembers.length > 0
+              ? `Who can see this • ${docMembers.length}`
+              : 'No users added to this document'}
           </p>
           {/* TODO: LIST ALL DOCUMENT MEMBERS HERE. CREATE API FUNCTIONS TO FETCH DOC MEMBERS */}
+          {docMembers.length > 0 &&
+            docMembers.map((docMember: User) => {
+              return (
+                <div
+                  className='flex gap-3 items-center py-2'
+                  key={docMember.id}
+                >
+                  <span className='bg-black text-white flex justify-center items-center rounded-full w-7 h-7'>
+                    {docMember?.username?.charAt(0) ?? ''}
+                  </span>
+                  <span>{docMember.username}</span>
+                </div>
+              );
+            })}
         </div>
         <div className='flex justify-between items-center gap-3 p-5'>
           <div>

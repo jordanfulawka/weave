@@ -219,6 +219,19 @@ async function updateDocumentFolder(
   return response.json();
 }
 
+async function getCollaborators(token: string, docId: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/doc/${docId}/members`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.json();
+}
+
 export {
   login,
   register,
@@ -235,4 +248,5 @@ export {
   renameFolder,
   deleteFolder,
   updateDocumentFolder,
+  getCollaborators,
 };

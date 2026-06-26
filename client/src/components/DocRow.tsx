@@ -41,7 +41,7 @@ function DocRow({
 
   return (
     <div
-      className={`group relative flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer text-on-surface hover:bg-surface-container ${isShared ? 'border-l-2 border-primary' : ''} ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''} ${inFolder ? 'ml-8' : ''}`}
+      className={`group relative flex justify-between items-center px-3 py-2 mx-1 rounded-md cursor-pointer text-on-surface hover:bg-surface-container ${params.docId === doc.id ? 'bg-surface-container-high text-primary font-medium' : ''} ${inFolder ? 'ml-8' : ''}`}
       key={doc.id}
       onClick={() => {
         navigate(`/doc/${doc.id}`);

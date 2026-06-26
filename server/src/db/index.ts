@@ -40,6 +40,14 @@ async function getUserByUsername(username: string) {
   return result.rows[0];
 }
 
+async function getUserById(userId: string) {
+  const text = 'SELECT * FROM users WHERE id = $1';
+  const values = [userId];
+
+  const result = await pool.query(text, values);
+  return result.rows[0];
+}
+
 // DOCUMENTS
 async function createDocument(ownerId: string) {
   const text = 'INSERT INTO documents(owner_id) VALUES($1) RETURNING *';
@@ -124,9 +132,10 @@ async function removeCollaborator(docId: string, userId: string) {
   await pool.query(text, values);
 }
 
-async function getDocumentMembers(docId: string) {
-  const text = 'SELECT * FROM document_members WHERE document_id = $1';
-  const values = [docId];
+async function getDocumentMembers(docId: string, excludeUserId: string) {
+  const text =
+    'SELECT users.* FROM document_members JOIN users ON document_members.user_id = users.id WHERE document_id = $1 AND user_id <> $2';
+  const values = [docId, excludeUserId];
 
   const result = await pool.query(text, values);
   return result.rows;
@@ -295,4 +304,5 @@ export {
   createFolder,
   updateFolderName,
   deleteFolder,
+  getUserById,
 };

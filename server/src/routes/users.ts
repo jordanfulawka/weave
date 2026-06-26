@@ -1,7 +1,7 @@
 import express from 'express';
 import { httpAuth } from '../middlewares/httpAuth';
 import type { Request, Response } from 'express';
-import { searchUsers } from '../db';
+import { getUserById, searchUsers } from '../db';
 
 const router = express.Router();
 
@@ -17,6 +17,19 @@ router.route('/search').get(httpAuth, async (req: Request, res: Response) => {
       typeof excludeDocId === 'string' ? excludeDocId : undefined,
     );
     res.status(200).json({ users });
+  } catch (err) {
+    res.status(500).json({ error: 'there was an error' });
+  }
+});
+
+router.route('/:id').get(httpAuth, async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (typeof id !== 'string') {
+      return res.status(400).json({ error: 'invalid id' });
+    }
+    const user = await getUserById(id);
+    res.status(200).json({ user });
   } catch (err) {
     res.status(500).json({ error: 'there was an error' });
   }

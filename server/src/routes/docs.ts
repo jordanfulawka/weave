@@ -5,9 +5,11 @@ import {
   createDocument,
   deleteDocument,
   getDocument,
+  getDocumentMembers,
   getGraphData,
   getOwnedDocuments,
   getSharedDocuments,
+  getUserById,
   isDocumentMember,
   removeCollaborator,
   updateDocumentFolder,
@@ -114,6 +116,21 @@ router.route('/:id').delete(httpAuth, async (req: Request, res: Response) => {
 
 router
   .route('/:id/members')
+  .get(httpAuth, async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      if (typeof id !== 'string') {
+        return res.status(400).json({ error: 'invalid id' });
+      }
+      const members = await getDocumentMembers(id, (req as any).user.id);
+      res.status(200).json({ members });
+    } catch (err) {
+      res.status(500).json({ error: 'there was an error' });
+    }
+  });
+
+router
+  .route('/:id/members')
   .post(httpAuth, async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
@@ -128,8 +145,9 @@ router
       if (typeof userId !== 'string') {
         return res.status(400).json({ error: 'invalid id' });
       }
-      const result = await addCollaborator(id, userId);
-      res.status(200).json({ result });
+      await addCollaborator(id, userId);
+      const addedUser = await getUserById(userId);
+      res.status(200).json({ addedUser });
     } catch (err) {
       res.status(400).json({ error: 'there was an error' });
     }
