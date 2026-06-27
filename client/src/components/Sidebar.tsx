@@ -3,7 +3,7 @@ import type { Document } from '../lib/types';
 import { useDocuments } from '../contexts/DocumentsContext';
 import { useEffect, useMemo, useState } from 'react';
 import DocRow from './DocRow';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar() {
@@ -26,6 +26,8 @@ export default function Sidebar() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const navigate = useNavigate();
+
+  const params = useParams();
 
   function toggleFolder(folderId: string) {
     setExpandedFolders((expandedFolders) => {
@@ -61,6 +63,10 @@ export default function Sidebar() {
   }, [searchTerm]);
 
   useEffect(() => {
+    setSearchTerm('');
+  }, [params.docId]);
+
+  useEffect(() => {
     console.log(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
@@ -86,10 +92,12 @@ export default function Sidebar() {
   }, [folders, ownedDocs]);
 
   const searchResults = ownedDocs
-    .filter((doc) => doc.title.includes(debouncedSearchTerm.toLowerCase()))
+    .filter((doc) =>
+      doc.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+    )
     .concat(
       sharedDocs.filter((doc) =>
-        doc.title.includes(debouncedSearchTerm.toLowerCase()),
+        doc.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       ),
     );
 
@@ -127,6 +135,7 @@ export default function Sidebar() {
       </div>
       {debouncedSearchTerm.length > 0 ? (
         <div className='mt-5 flex-1 overflow-y-auto'>
+          <div>{searchResults.length} results</div>
           {searchResults.length > 0 ? (
             searchResults.map((doc) => (
               <div onClick={() => setDebouncedSearchTerm('')}>

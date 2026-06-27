@@ -20,6 +20,8 @@ function DocWorkspace() {
     (doc) => doc.id === params.docId,
   );
 
+  const isOwned = ownedDocs.find((doc) => params.docId === doc.id);
+
   useEffect(() => {
     if (currentDoc) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -59,7 +61,13 @@ function DocWorkspace() {
           />
         )}
         <button
-          className='flex items-center gap-1 text-sm self-start bg-primary text-on-primary p-3 rounded-xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'
+          disabled={!isOwned}
+          title={isOwned ? undefined : 'Only the owner can share this document'}
+          className={
+            isOwned
+              ? 'flex items-center gap-1 text-sm self-start bg-primary text-on-primary p-3 rounded-xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200'
+              : 'flex items-center gap-1 text-sm self-start bg-surface-container text-on-surface-variant p-3 rounded-xl cursor-not-allowed transition-all duration-200'
+          }
           onClick={() => setIsShareModalOpen(true)}
         >
           <span>Share</span> <Share size={16} />
@@ -68,12 +76,15 @@ function DocWorkspace() {
       <div className='flex gap-1'>
         {users.map((user: any) => {
           return (
-            <div
-              className='rounded-full w-7 h-7 flex justify-center items-center text-white'
-              style={{ backgroundColor: `${user?.user?.color}` }}
-              title={user?.user?.name}
-            >
-              {user?.user?.name.charAt(0).toUpperCase()}
+            <div className='flex items-center'>
+              <p className='px-2 text-on-surface-variant text-sm'>Online: </p>
+              <div
+                className='rounded-full w-7 h-7 flex justify-center items-center text-white cursor-pointer'
+                style={{ backgroundColor: `${user?.user?.color}` }}
+                title={user?.user?.name}
+              >
+                {user?.user?.name.charAt(0).toUpperCase()}
+              </div>
             </div>
           );
         })}
