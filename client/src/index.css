@@ -60,6 +60,29 @@
   --spacing-xxl: 64px;
   --spacing-gutter: 24px;
   --spacing-container: 1120px;
+
+  --animate-slide-up: slide-up 1s ease-out forwards;
+  @keyframes slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(200px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  --animate-letter-bounce: letter-bounce 0.3s linear forwards;
+  @keyframes letter-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
 }
 
 body {
